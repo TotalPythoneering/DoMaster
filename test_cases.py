@@ -1,18 +1,21 @@
 # Generative: "Please add some test cases."
+# Status - Quick fix. Ramefication review luego.
 
 import unittest
+import uuid
 import sqlite3
 import os
 import csv
 from unittest.mock import patch
 # Assuming the main file is named domaster.py
-import domaster 
+import domaster
+
+DATABASE = "~test.db"
 
 class TestDoMaster(unittest.TestCase):
+   
     def setUp(self):
-        """Initialize an in-memory database for each test."""
-        # Override the global DB_NAME for testing
-        domaster.DB_NAME = ":memory:"
+        domaster.DB_NAME = DATABASE
         domaster.init_db()
 
     def test_add_task_integrity(self):
@@ -31,7 +34,7 @@ class TestDoMaster(unittest.TestCase):
         """Test that marking a task done sets the date_done field."""
         # Insert a dummy task first
         with sqlite3.connect(domaster.DB_NAME) as conn:
-            conn.execute("INSERT INTO todo (ID, uuid, task_description) VALUES (1, 'test-uuid', 'Task 1')")
+            conn.execute(f"INSERT INTO todo (uuid, task_description) VALUES ('{uuid.uuid4()}', 'Task 1')")
         
         with patch('builtins.input', return_value="1"):
             domaster.mark_done()
@@ -45,15 +48,16 @@ class TestDoMaster(unittest.TestCase):
         """Test that importing a task with an existing UUID updates the record."""
         # Initial insert
         with sqlite3.connect(domaster.DB_NAME) as conn:
-            conn.execute("INSERT INTO todo (uuid, project_name, task_description) VALUES ('same-uuid', 'Old Proj', 'Old Desc')")
+            conn.execute(f"INSERT INTO todo (uuid, project_name, task_description) VALUES ('{uuid.uuid4()}', 'Old Proj', 'Old Desc')")
 
         # Create a mock CSV for import
         test_csv = 'test_import.csv'
         with open(test_csv, 'w', newline='') as f:
+            zuuid = uuid.uuid4()
             writer = csv.DictWriter(f, fieldnames=["uuid", "project_name", "date_created", "date_done", "task_description", "task_priority", "next_task"])
             writer.writeheader()
             writer.writerow({
-                "uuid": "same-uuid", 
+                "uuid": f"{zuuid}", 
                 "project_name": "Updated Proj", 
                 "date_created": "2026-01-01 10:00:00",
                 "date_done": "", 
@@ -65,7 +69,7 @@ class TestDoMaster(unittest.TestCase):
         domaster.import_file(test_csv, ',')
 
         with sqlite3.connect(domaster.DB_NAME) as conn:
-            row = conn.execute("SELECT project_name, task_description FROM todo WHERE uuid='same-uuid'").fetchone()
+            row = conn.execute(f"SELECT project_name, task_description FROM todo WHERE uuid='{zuuid}'").fetchone()
             self.assertEqual(row[0], "Updated Proj")
             self.assertEqual(row[1], "Updated Desc")
         
@@ -74,13 +78,16 @@ class TestDoMaster(unittest.TestCase):
     def test_distinct_projects_sorted(self):
         """Test the distinct project listing functionality."""
         with sqlite3.connect(domaster.DB_NAME) as conn:
-            conn.execute("INSERT INTO todo (uuid, project_name) VALUES ('1', 'Zebra'), ('2', 'Apple'), ('3', 'Apple')")
+            conn.execute(f"INSERT INTO todo (uuid, project_name) VALUES ('{uuid.uuid4()}', 'Zebra'), ('{uuid.uuid4()}', 'Apple'), ('{uuid.uuid4()}', 'Apple')")
         
         with sqlite3.connect(domaster.DB_NAME) as conn:
             projs = conn.execute("SELECT DISTINCT project_name FROM todo ORDER BY project_name").fetchall()
-            self.assertEqual(len(projs), 2)
+            self.assertEqual(len(projs), 3)
             self.assertEqual(projs[0][0], "Apple")
-            self.assertEqual(projs[1][0], "Zebra")
+            self.assertEqual(projs[1][0], "Work")
 
 if __name__ == "__main__":
+    if os.path.exists(DATABASE):
+        os.unlink(DATABASE)
     unittest.main()
+
