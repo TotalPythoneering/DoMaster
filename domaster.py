@@ -41,7 +41,7 @@ class DoMaster:
             """)
 
     def add_task(self):
-        ''' UI to add a task to the database. '''
+        ''' Add a task to the database. '''
         print("\n--- Add New Task ---")
         proj = input("Project Name: ")
         desc = input("Description: ")
@@ -55,7 +55,7 @@ class DoMaster:
         print("Task added successfully.")
 
     def update_task(self):
-        ''' UI to update a task in the database. '''
+        ''' Update a task in the database. '''
         tid = input("Enter ID to update: ")
         fields = ["project_name", "task_description", "task_priority", "next_task", "date_done"]
         print("Available fields:", ", ".join(fields))
@@ -66,7 +66,7 @@ class DoMaster:
             conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
 
     def mark_done(self):
-        ''' UI to complete a task in the database. '''
+        ''' Complete a task in the database. '''
         tid = input("Enter Task ID to mark as done: ")
         with sqlite3.connect(self.db_file) as conn:
             conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?", (self.get_now(), tid))
@@ -86,7 +86,7 @@ class DoMaster:
                 print(f"{r[0]:<4} | {r[1]:<15} | {r[2]:<25} | {r[3]:<4} | {r[4]}")
 
     def export_html(self, status="pending"):
-        ''' UI to generate the HTML report. '''
+        ''' Generate the HTML report. '''
         filename = f"report_{status}_{datetime.date.today()}.html"
         with sqlite3.connect(self.db_file) as conn:
             if status == "pending":
@@ -108,7 +108,7 @@ class DoMaster:
         print(f"Report exported to {filename}")
 
     def import_file(self, filename, delimiter):
-        ''' UI to import a database export. '''
+        ''' Import a database export. '''
         with open(filename, 'r') as f:
             reader = csv.DictReader(f, delimiter=delimiter)
             with sqlite3.connect(self.db_file) as conn:
@@ -126,20 +126,20 @@ class DoMaster:
 
     def list_pending(self):
         ''' List pending tasks. '''
-        list_tasks("pending")
+        self.list_tasks("pending")
 
     def list_done(self):
         ''' List completed tasks. '''
-        list_tasks("done")
+        self.list_tasks("done")
 
     def list_all(self):
         ''' List all tasks. '''
-        list_tasks("all")
+        self.list_tasks("all")
 
     def html_report(self):
         ''' Create the HTML Report. '''
-        export_html("pending")
-        export_html("done")
+        self.export_html("pending")
+        self.export_html("done")
 
     def project_report(self):
         ''' Show all project names. '''
