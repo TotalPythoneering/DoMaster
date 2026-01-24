@@ -6,7 +6,6 @@
 # FILE: domaster.py
 # AUTHOR: Randall Nagy
 #
-
 import os, sys
 import sqlite3
 import uuid
