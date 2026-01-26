@@ -28,7 +28,21 @@
 
 ## 🚀 Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com
-   cd domaster
+Either: 
+
+👉 **Clone the repository**:
+```
+bash
+git clone https://github.com
+cd domaster
+python ./domaster.py
+```
+
+👉 **~ or ~**
+```
+python -m pip install whatever.whl
+python -m domaster
+```
+
+
+
