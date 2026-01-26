@@ -1,8 +1,7 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Research
-# VERSION: 0.2.1
+# VERSION: 0.2.2
 # NOTES: Google's A.I only did so much - we've a few more things to add.
-# DATE: 2026-01-26 10:57:22
 # FILE: domaster.py
 # AUTHOR: Randall Nagy
 #
@@ -12,7 +11,7 @@ import uuid
 import csv
 import datetime
 
-VERSION = "DoMaster 0.0.1"
+VERSION = "DoMaster 0.1.0"
 DB_NAME = "domaster.db"
 
 class DoMaster:
@@ -33,7 +32,20 @@ class DoMaster:
         if not system:
             results.remove('uuid')
         return results
-        
+
+    def humanize(self, obj)->list:
+        ''' Convert database tags to 'humanized' title-case. '''
+        if isinstance(obj, dict):
+            return self.humanize(obj.keys())
+        elif isinstance(obj, list):
+            result = []
+            for fld in obj:
+                result.append(fld.replace('_', ' ').title())
+            return result
+        elif isinstance(obj, str):
+            return obj.replace('_', ' ').title()
+        return obj # gigo
+       
     def get_now(self):
         ''' Project `now` time. '''
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -66,7 +78,9 @@ class DoMaster:
         with sqlite3.connect(self.db_file) as conn:
             conn.execute("""INSERT INTO todo (uuid, project_name, date_created, task_description, task_priority, next_task) 
                          VALUES (?, ?, ?, ?, ?, ?)""", 
-                         (str(uuid.uuid4()), proj, self.get_now(), desc, pri, next_t))
+                         (str(uuid.uuid4()),
+                          proj, self.get_now(),
+                          desc, pri, next_t))
             conn.commit()
         print("Task added successfully.")
 
@@ -87,7 +101,7 @@ class DoMaster:
         fields = self.get_fields()
         fields.remove('ID')
         print("Available fields:")
-        for ss, field in enumerate(fields,1):
+        for ss, field in enumerate(self.humanize(fields),1):
             print(f'{ss:02}.) {field}') 
         which = input("Field # to update: ").strip()
         if not which:
@@ -137,25 +151,34 @@ class DoMaster:
                 print(f"Description: \n\t  [{r['task_description']:<15}]")
 
     def export_html(self, status="pending"):
+        # TODO: Add CSS (et al.)
         ''' Generate the HTML report. '''
         filename = f"report_{status}_{datetime.date.today()}.html"
+        fields = self.get_fields()
+        sql_fields = ', '.join(fields)
         with sqlite3.connect(self.db_file) as conn:
+            conn.row_factory = sqlite3.Row
             if status == "pending":
-                rows = conn.execute("SELECT project_name, task_description, task_priority, date_created FROM todo WHERE date_done IS NULL ORDER BY project_name, task_priority").fetchall()
-                group_field = 0 # project_name
+                rows = conn.execute(f"""SELECT {sql_fields} FROM todo
+WHERE date_done IS NULL ORDER BY project_name, task_priority""").fetchall()
+                group_field = 'project_name'
             else:
-                rows = conn.execute("SELECT date_done, project_name, task_description, task_priority FROM todo WHERE date_done IS NOT NULL ORDER BY date_done DESC").fetchall()
-                group_field = 0 # date_done
+                rows = conn.execute(f"""SELECT {sql_fields} FROM todo
+WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
+                group_field = 'date_done'
 
         with open(filename, "w") as f:
-            f.write(f"<html><body><h1>DoMaster {status.capitalize()} Report</h1>")
+            f.write(f"<html><body><h1>DoMaster [{status.upper()}] Report</h1>")
             current_group = None
             for r in rows:
                 if r[group_field] != current_group:
                     current_group = r[group_field]
                     f.write(f"<h2>{current_group}</h2>")
-                f.write(f"<p>{r[1]} - Priority: {r[2]} (Created: {r[3] if status=='pending' else ''})</p>")
-            f.write("</body></html>")
+                adict = dict(zip(fields, r))
+                f.write('<hr>')
+                for tag in adict:
+                    htag = self.humanize(tag)
+                    f.write(f"<b>{htag}:</b>&nbsp;&nbsp;{adict[tag]}<br>")
         print(f"Report exported to {filename}")
 
     def list_pending(self):
