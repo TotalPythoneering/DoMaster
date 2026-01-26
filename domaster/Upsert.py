@@ -1,6 +1,6 @@
 # MISSION: Manage a to-do list or / and ideas.
 # STATUS: Research
-# VERSION: 0.1.0
+# VERSION: 0.1.1
 # NOTES: Lighty tested. See the project for full documentation.
 # DATE: 2026-01-25 17:27:35
 # FILE: Upsert.py

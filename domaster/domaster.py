@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Research
-# VERSION: 0.2.0
+# VERSION: 0.2.1
 # NOTES: Google's A.I only did so much - we've a few more things to add.
 # DATE: 2026-01-26 10:57:22
 # FILE: domaster.py
@@ -18,6 +18,21 @@ DB_NAME = "domaster.db"
 class DoMaster:
     def __init__(self, db_file=DB_NAME):
         self.db_file = db_file
+
+    def get_fields(self, system=False)->list:
+        results = [
+                    'ID',
+                    'uuid',
+                    'project_name',
+                    'date_created',
+                    'date_done',
+                    'task_description',
+                    'task_priority',
+                    'next_task'
+            ]
+        if not system:
+            results.remove('uuid')
+        return results
         
     def get_now(self):
         ''' Project `now` time. '''
@@ -52,41 +67,74 @@ class DoMaster:
             conn.execute("""INSERT INTO todo (uuid, project_name, date_created, task_description, task_priority, next_task) 
                          VALUES (?, ?, ?, ?, ?, ?)""", 
                          (str(uuid.uuid4()), proj, self.get_now(), desc, pri, next_t))
+            conn.commit()
         print("Task added successfully.")
+
+    def delete_task(self):
+        ''' Remove a task from the database. '''
+        tid = input("Enter ID to delete: ").strip()
+        if not tid:
+            return
+        with sqlite3.connect(self.db_file) as conn:
+            conn.execute(f"DELETE FROM todo WHERE ID = ?", (tid))
+            conn.commit()
 
     def update_task(self):
         ''' Update a task in the database. '''
-        tid = input("Enter ID to update: ")
-        fields = ["project_name", "task_description", "task_priority", "next_task", "date_done"]
-        print("Available fields:", ", ".join(fields))
-        field = input("Field to update: ")
-        new_val = input(f"New value for {field}: ")
-        
+        tid = input("Enter ID to update: ").strip()
+        if not tid:
+            return
+        fields = self.get_fields()
+        fields.remove('ID')
+        print("Available fields:")
+        for ss, field in enumerate(fields,1):
+            print(f'{ss:02}.) {field}') 
+        which = input("Field # to update: ").strip()
+        if not which:
+            return
+        try:
+            which = int(which)
+            which -= 1
+            field = fields[which]
+        except:
+            print("Invalid field number.")
+            return
+        del which
+        new_val = input(f"New value for {field}: ").strip()
+        if not new_val:
+            print("Aborted.")
+            return
         with sqlite3.connect(self.db_file) as conn:
             conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
+            conn.commit()
 
     def mark_done(self):
-        ''' Complete a task in the database. '''
-        tid = input("Enter Task ID to mark as done: ")
+        ''' Date task ID completed. '''
+        tid = input("Enter Task ID to mark as done: ").strip()
+        if not tid:
+            print("Aborted.")
+            return
         with sqlite3.connect(self.db_file) as conn:
             conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?", (self.get_now(), tid))
 
     def list_tasks(self,filter_type="all"):
-        query = "SELECT ID, project_name, task_description, task_priority, date_created, date_done FROM todo"
-        if filter_type == "pending": query += " WHERE date_done IS NULL OR date_done = ''"
-        elif filter_type == "done": query += " WHERE date_done IS NOT NULL AND date_done != ''"
-        
-        query += " ORDER BY project_name ASC, task_priority ASC"
-        
+        fields = self.get_fields()
+        query = f"SELECT {', '.join(fields)} FROM todo"
+        if filter_type == "pending":
+            query += " WHERE date_done IS NULL OR date_done = ''"
+        elif filter_type == "done":
+            query += " WHERE date_done IS NOT NULL AND date_done != ''"        
+        query += " ORDER BY project_name ASC, task_priority ASC"        
         with sqlite3.connect(self.db_file) as conn:
+            conn.row_factory = sqlite3.Row
             rows = conn.execute(query).fetchall()
             for r in rows:
                 print('*'*15)
-                print(f"ID      : [{r[0]:<15}]")
-                print(f"Project : [{r[1]:<15}]")
-                print(f"Priotity: [{r[2]:<15}]")
-                print(f"Created : [{r[3]:<15}]")
-                print(f"Description: {r[4]}")
+                print(f"ID      : [{r['ID']:03}]", f"   Next: [{r['next_task']:03}]")
+                print(f"Project : [{r['project_name']:<15}]")
+                print(f"Priority: [{r['task_priority']:02}]")
+                print(f"Created : [{r['date_created']:<15}]")
+                print(f"Description: \n\t  [{r['task_description']:<15}]")
 
     def export_html(self, status="pending"):
         ''' Generate the HTML report. '''
@@ -184,8 +232,9 @@ def mainloop():
     ops.init_db()
     options = {
         'Add Task':ops.add_task,
+        'Delete Task':ops.delete_task,
         'Update Task':ops.update_task,
-        'Tack Complete':ops.mark_done,
+        'Mark Completed':ops.mark_done,
         'List Pendings':ops.list_pending,
         'List Done':ops.list_done,
         'List All':ops.list_all,

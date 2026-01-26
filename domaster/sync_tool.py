@@ -1,6 +1,6 @@
 # MISSION: Manage a to-do list or / and ideas.
 # STATUS: Testing
-# VERSION: 0.2.0
+# VERSION: 0.2.1
 # NOTES: Lighty tested. See the project for full documentation.
 # DATE: 2026-01-24 09:06:19
 # FILE: sync_tool.py
