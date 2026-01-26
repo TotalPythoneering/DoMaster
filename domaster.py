@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Research
-# VERSION: 0.0.1
+# VERSION: 0.1.0
 # NOTES: Google's A.I only did so much - we've a few more things to add.
 # DATE: 2026-01-23 06:51:54
 # FILE: domaster.py
@@ -18,6 +18,7 @@ DB_NAME = "domaster.db"
 class DoMaster:
     def __init__(self, db_file=DB_NAME):
         self.db_file = db_file
+        
     def get_now(self):
         ''' Project `now` time. '''
         return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -79,10 +80,13 @@ class DoMaster:
         
         with sqlite3.connect(self.db_file) as conn:
             rows = conn.execute(query).fetchall()
-            print(f"\n{'ID':<4} | {'Project':<15} | {'Description':<25} | {'Pri':<4} | {'Created'}")
-            print("-" * 80)
             for r in rows:
-                print(f"{r[0]:<4} | {r[1]:<15} | {r[2]:<25} | {r[3]:<4} | {r[4]}")
+                print('*'*15)
+                print(f"ID      : [{r[0]:<15}]")
+                print(f"Project : [{r[1]:<15}]")
+                print(f"Priotity: [{r[2]:<15}]")
+                print(f"Created : [{r[3]:<15}]")
+                print(f"Description: {r[4]}")
 
     def export_html(self, status="pending"):
         ''' Generate the HTML report. '''
@@ -146,6 +150,30 @@ class DoMaster:
             projs = conn.execute("SELECT DISTINCT project_name FROM todo ORDER BY project_name").fetchall()
             for p in projs: print(f"- {p[0]}")
 
+    def export_csv(self)->bool:
+        ''' Export to CSV file. '''
+        from sync_tool import SQLiteCSVSync
+        mgr = SQLiteCSVSync(self.db_file, 'todo')
+        zfile = self.db_file + '.csv'
+        br = mgr.export_to_csv(zfile)
+        if not br:
+            print("Error: Unable to export {zfile} file.")
+        else:
+            print(f"Success: Exported {zfile}.")
+        return br
+
+    def import_csv(self)->bool:
+        ''' Import CSV file into the database. '''
+        from sync_tool import SQLiteCSVSync
+        mgr = SQLiteCSVSync(self.db_file, 'todo')
+        zfile = self.db_file + '.csv'
+        br = mgr.import_from_csv(zfile)
+        if not br:
+            print("Error: Unable to import {zfile} file.")
+        else:
+            print(f"Success: Imported {zfile}.")
+        return br
+
     def todo(self):
         ''' Unloved - work in progress '''
         print("Work in progress - stay tuned?")
@@ -168,8 +196,8 @@ def mainloop():
         'List All':ops.list_all,
         'Projects':ops.project_report,
         'HTML Report':ops.html_report,
-        'Export Data':ops.todo,
-        'Import Data':ops.todo,
+        'Export Data':ops.export_csv,
+        'Import Data':ops.import_csv,
         'Database Backup':ops.todo,
         'Quit':ops.do_quit
         }
