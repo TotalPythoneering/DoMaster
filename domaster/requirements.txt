@@ -1,0 +1,16 @@
+create a console tui todo list manager in python. The name of the application is DoMaster. 
+Table name is todo. Table rows are ID, uuid, project_name, date_created, date_done, task_description, task_priority, and next_task. 
+Each field in the row definitions are to be updatable. Include the ability to mark any row as done. Add an immutable guid to the uuid field upon creation.
+Support full c.r.u.d management for everything besides the uuid field.
+Set the date_created to the local date and time when created. Set date_done to the same when the item is marked done.
+The next_task is a primary key to another item in the database whose default value is 0.
+Include the ability to list items by task_description, project_name, or date_created; all listings ordered by project_name then by task_priority.
+Include the ability to list items without a date_done, with a date_done, as well as all items regardless of the date_done. 
+Include the ability to display a distinct list of sorted project_name.
+Include the ability to export an html report of all items without a date_done, grouped by project_name then ordered by task_priority as a separate function. Use the project_name as the sub header for this report. Do not display the uuid field.
+Include another option to export an html report of all items with a date_done, grouped by project_name then ordered by completion date. Use the date as a sub-header before each item on this report. Do not display the uuid field.
+Include the ability to export and import each item into a tab-delimited as well as a csv file. Be sure to include the uuid in all exports and imports. If a uuid is the same on import, be sure to update the field. If  uuid is not the in the database on import then insert the row into the database.
+Include the abilities to dump, empty, as well as to load the entire database into an sql database file using the present local date and time.
+
+
+
