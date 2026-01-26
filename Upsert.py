@@ -30,7 +30,7 @@ class UpsertSqlite:
             raise ValueError(
                 f"Table [{table_name}] missing 'uuid' column.")
         
-        row = junk_id(row)
+        row = UpsertSqlite.JunkId(row)
                 
         placeholders = ", ".join(["?"] * len(row))
         column_names = ", ".join(row.keys())
@@ -85,7 +85,7 @@ class UpsertSqlite:
         if 'uuid' not in row:
             raise ValueError(f"Table [{table_name}] missing 'uuid' column.")
 
-        row = junk_id(row)
+        row = UpsertSqlite.JunkId(row)
             
         column_names = ", ".join(row.keys())
         # Create placeholders like (?, ?, ?)

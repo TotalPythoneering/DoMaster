@@ -1,6 +1,6 @@
 # MISSION: Manage a to-do list or / and ideas.
-# STATUS: Research
-# VERSION: 0.1.0
+# STATUS: Production
+# VERSION: 1.0.0
 # NOTES: Lighty tested. See the project for full documentation.
 # DATE: 2026-01-24 09:06:36
 # FILE: test_sync.py
@@ -24,6 +24,7 @@ import csv
 import os
 import time
 from sync_tool import SQLiteCSVSync
+from Upsert import *
 
 class TestSync(unittest.TestCase):
     DB = "test_data.db"
@@ -56,7 +57,7 @@ class TestSync(unittest.TestCase):
             'age':'30',
             'phone':'555'
             }
-        cmd = SQLiteCSVSync.EncodeUpsert('contacts', data)
+        cmd = UpsertSqlite.EncodeUpsert('contacts', data)
         print(cmd)
         with sqlite3.connect(self.DB) as conn:
             conn.execute(cmd)
@@ -75,7 +76,7 @@ class TestSync(unittest.TestCase):
             'age':'20',
             'phone':'000'
             }
-        cmd = SQLiteCSVSync.EncodeUpsert('contacts', data)
+        cmd = UpsertSqlite.EncodeUpsert('contacts', data)
         print(cmd)
         with sqlite3.connect(self.DB) as conn:
             conn.execute(cmd)
