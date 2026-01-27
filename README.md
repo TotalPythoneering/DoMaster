@@ -2,6 +2,8 @@
 
 **DoMaster** is a robust, lightweight Console Terminal User Interface (TUI) task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
+Forever free & open **DoMaster* allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database.
+
 ## 🌟 STATUS
 Good to go!
 
@@ -31,24 +33,24 @@ Good to go!
 
 ## 🚀 Installation
 
-More than one way to enjoy the do-master:
+To avoid database `pwd` confusion, the best idea is to always use Python's package installer:
 
-### ✌️Either: 
+✔️ Download the wheels file.
 
-👉 **Clone the repository**:
-```
-bash
-git clone https://github.com
-cd domaster
-python ./domaster.py
-```
+✔️ Change to the 'dist' folder.
 
-👉 **Otherwise**
+✔️ Then:
+
 ```
 python -m pip install whatever.whl
 python -m domaster
 ```
 
+🎓 **Note:** the GLOBAL / PACKAGE database is the default. Toggling the LOCAL database will put the same into wherever we choose to run `python -m domaster` ...
+
+Happy 'Spire-ring!
+
+🫡 -- Randall
 
 
 
