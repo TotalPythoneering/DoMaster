@@ -2,7 +2,7 @@
 
 **DoMaster** is a robust, lightweight Console Terminal User Interface (TUI) task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
-Forever free & open **DoMaster* allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database.
+Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
 ## 🌟 STATUS
 Good to go!
@@ -52,7 +52,7 @@ python -m domaster
 
 👉 TUI-toggling the LOCAL database will put the same into wherever we choose to run `python -m domaster` ... !
 
-👉 Both the HTML Reports & CSV Exports are ALWAYS put into the LOCAL (`pwd`) Db. 
+👉 Both the HTML Reports & CSV Exports are ALWAYS put into the LOCAL (`pwd`) Db. (*)
 
 
 Happy 'Spire-ring!
@@ -60,6 +60,7 @@ Happy 'Spire-ring!
 -- Randall
 🫡 
 
+(*) and yes, with care we might even *export* from one `Db` to *import* into the other.
 
 
 
