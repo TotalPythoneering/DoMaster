@@ -1,7 +1,8 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
-# STATUS: Research
-# VERSION: 0.2.2
-# NOTES: Google's A.I only did so much - we've a few more things to add.
+# STATUS: Production
+# VERSION: 1.0.0
+# NOTES: https://github.com/TotalPythoneering/DoMaster
+# DATE: 2026-01-27 07:53:24
 # FILE: domaster.py
 # AUTHOR: Randall Nagy
 #
@@ -11,7 +12,7 @@ import uuid
 import csv
 import datetime
 
-VERSION = "DoMaster 0.1.0"
+VERSION = "DoMaster 1.0.0"
 DB_NAME = "domaster.db"
 
 class DoMaster:
@@ -66,6 +67,17 @@ class DoMaster:
                     next_task INTEGER DEFAULT 0
                 )
             """)
+
+    def count(self):
+        ''' Count the items in the TODO table. '''
+        try:
+            with sqlite3.connect(self.db_file) as conn:
+                count_query = f"SELECT COUNT(*) FROM todo;"
+                result = conn.execute(count_query)
+                return int(result.fetchone()[0])
+        except Exception as ex:
+            print(ex)
+        return 0
 
     def add_task(self):
         ''' Add a task to the database. '''
@@ -142,17 +154,23 @@ class DoMaster:
         with sqlite3.connect(self.db_file) as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(query).fetchall()
+            count = 0
             for r in rows:
+                count += 1
                 print('*'*15)
                 print(f"ID      : [{r['ID']:03}]", f"   Next: [{r['next_task']:03}]")
                 print(f"Project : [{r['project_name']:<15}]")
                 print(f"Priority: [{r['task_priority']:02}]")
                 print(f"Created : [{r['date_created']:<15}]")
                 print(f"Description: \n\t  [{r['task_description']:<15}]")
+        print(f"View [{filter_type.upper()}] is {count:03} of {self.count():03} items.")
 
-    def export_html(self, status="pending"):
+    def export_html(self, status="pending")->int:
         # TODO: Add CSS (et al.)
-        ''' Generate the HTML report. '''
+        ''' Generate the HTML report. Returns number exported. '''
+        if self.count() == 0:
+            print("Database is empty.")
+            return 0
         filename = f"report_{status}_{datetime.date.today()}.html"
         fields = self.get_fields()
         sql_fields = ', '.join(fields)
@@ -167,6 +185,7 @@ WHERE date_done IS NULL ORDER BY project_name, task_priority""").fetchall()
 WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
                 group_field = 'date_done'
 
+        count = 0
         with open(filename, "w") as f:
             f.write(f"<html><body><h1>DoMaster [{status.upper()}] Report</h1>")
             current_group = None
@@ -176,10 +195,12 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
                     f.write(f"<h2>{current_group}</h2>")
                 adict = dict(zip(fields, r))
                 f.write('<hr>')
+                count += 1
                 for tag in adict:
                     htag = self.humanize(tag)
                     f.write(f"<b>{htag}:</b>&nbsp;&nbsp;{adict[tag]}<br>")
         print(f"Report exported to {filename}")
+        return count
 
     def list_pending(self):
         ''' List pending tasks. '''
@@ -195,8 +216,12 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
 
     def html_report(self):
         ''' Create the HTML Report. '''
-        self.export_html("pending")
-        self.export_html("done")
+        total_pending = self.export_html("pending")
+        total_done    = self.export_html("done")
+        if total_pending == total_done == 0:
+            print("No items exported.")
+        else:
+            print(f'Pending: {total_pending:03}, Done: {total_done:03}')
 
     def project_report(self):
         ''' Show all project names. '''
@@ -206,6 +231,9 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
 
     def export_csv(self, dated=False)->bool:
         ''' Export to CSV file. '''
+        if self.count() == 0:
+            print("Database is empty.")
+            return False
         from sync_tool import SQLiteCSVSync
         mgr = SQLiteCSVSync(self.db_file, 'todo')
         zfile = self.db_file + '.csv'
@@ -233,7 +261,14 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
         return br
 
     def backup_and_empty(self)->None:
+        if self.count() == 0:
+            print("Database is empty.")
+            return
         ''' Export & reset TODO list. '''
+        cando = input("Okay to blank the database? ").strip().lower()
+        if not cando or cando[0] != 'y':
+            print("Aborted.")
+            return
         if not self.export_csv(True):
             return
         try:
