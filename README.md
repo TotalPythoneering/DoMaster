@@ -46,11 +46,19 @@ python -m pip install whatever.whl
 python -m domaster
 ```
 
-🎓 **Note:** the GLOBAL / PACKAGE database is the default. Toggling the LOCAL database will put the same into wherever we choose to run `python -m domaster` ...
+🎓 **Notes:** 
+
+👉 The GLOBAL / PACKAGE database is the default. 
+
+👉 TUI-toggling the LOCAL database will put the same into wherever we choose to run `python -m domaster` ... !
+
+👉 Both the HTML Reports & CSV Exports are ALWAYS put into the LOCAL (`pwd`) Db. 
+
 
 Happy 'Spire-ring!
 
-🫡 -- Randall
+-- Randall
+🫡 
 
 
 
