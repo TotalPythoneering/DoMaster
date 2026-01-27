@@ -1,12 +1,12 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 1.1.2
+# VERSION: 1.1.3
 # NOTES: https://github.com/TotalPythoneering/DoMaster
 # DATE: 2026-01-27 10:44:49
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
-import os, sys
+import os, sys, shutil
 import sqlite3
 import uuid
 import csv
@@ -211,7 +211,7 @@ class DoMaster:
         conn.close()
 
     def list_tasks(self,filter_type="all"):
-        print('debug',self.db_file)
+        print(self.short_db_name())
         fields = self.get_fields()
         query = f"SELECT {', '.join(fields)} FROM todo"
         if filter_type == "pending":
@@ -308,8 +308,12 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
             return False
         mgr = SQLiteCSVSync(self.db_file, 'todo')
         zfile = 'domaster.csv'
+        safe = self.get_now().replace(':','-').replace(' ','@')
+        if os.path.exists(zfile):
+            ztmp = '~' + safe + '_' + zfile
+            shutil.copyfile(zfile, ztmp)
+            print(f'Saved older {zfile} as {ztmp}.')
         if dated:
-            safe = self.get_now().replace(':','-').replace(' ','@')
             zfile =  f'~domaster_backup_{safe}.csv'
         br = mgr.export_to_csv(zfile)
         if not br:
@@ -330,6 +334,16 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
         else:
             print(f"Success: Imported {zfile}.")
         return br
+
+    def remove_temp_files(self)->None:
+        ''' Remove temporary files. '''
+        for file in os.listdir():
+            if str(file).startswith('~'):
+                os.unlink(file)
+                if os.path.exists(file):
+                    print(f"Warning: Unable to remove {file}.")
+                else:
+                    print(f"Removed {file}.")
 
     def backup_and_empty(self)->None:
         ''' Export & reset TODO list. '''
@@ -373,6 +387,7 @@ def mainloop():
         'Import Data':ops.import_csv,
         'Reset Database':ops.backup_and_empty,
         'Swap Db':ops.swap_db,
+        'Cleanup':ops.remove_temp_files,
         'Quit':ops.do_quit
         }
     keys = list(options.keys())
