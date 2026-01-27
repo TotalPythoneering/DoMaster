@@ -2,8 +2,8 @@
 
 **DoMaster** is a robust, lightweight Console Terminal User Interface (TUI) task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
-## STATUS
-Lots of annoying A.I contrivances to fix - work in progress!
+## 🌟 STATUS
+Good to go!
 
 ## 🌟 Features
 
@@ -31,7 +31,9 @@ Lots of annoying A.I contrivances to fix - work in progress!
 
 ## 🚀 Installation
 
-Either: 
+More than one way to enjoy the do-master:
+
+### ✌️Either: 
 
 👉 **Clone the repository**:
 ```
@@ -41,11 +43,12 @@ cd domaster
 python ./domaster.py
 ```
 
-👉 **~ or ~**
+👉 **Otherwise**
 ```
 python -m pip install whatever.whl
 python -m domaster
 ```
+
 
 
 
