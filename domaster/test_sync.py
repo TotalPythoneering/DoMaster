@@ -1,6 +1,6 @@
 # MISSION: Manage a to-do list or / and ideas.
 # STATUS: Production
-# VERSION: 1.1.0
+# VERSION: 1.1.1
 # NOTES: Lighty tested. See the project for full documentation.
 # DATE: 2026-01-24 09:06:36
 # FILE: test_sync.py

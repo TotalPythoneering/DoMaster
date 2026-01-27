@@ -1,6 +1,6 @@
 # MISSION: Manage a to-do list or / and ideas.
 # STATUS: Production
-# VERSION: 1.1.0
+# VERSION: 1.1.1
 # NOTES: Tested. See the project for full documentation.
 # DATE: 2026-01-27 08:38:38
 # FILE: sync_tool.py

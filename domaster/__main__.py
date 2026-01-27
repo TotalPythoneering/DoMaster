@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Research
-# VERSION: 1.2.0
+# VERSION: 1.2.1
 # NOTES: Official T.U.I in-our-face. :^)
 # DATE: 2026-01-27 09:23:15
 # FILE: __main__.py

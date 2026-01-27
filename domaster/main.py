@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 1.1.0
+# VERSION: 1.1.2
 # NOTES: https://github.com/TotalPythoneering/DoMaster
 # DATE: 2026-01-27 10:44:49
 # FILE: main.py
@@ -22,33 +22,39 @@ except Exception as ex:
 
 FILE_ROOT = "domaster.db"
 VERSION = "DoMaster 2026.01.27"
-root = os.path.dirname(os.path.abspath(__file__))
-DB_NAME = os.path.join(root, FILE_ROOT)
-del root
 
 class DoMaster:
-    def __init__(self, db_file=DB_NAME):
-        self.db_file = db_file
-
-##    def home(self, file)->str:
-##        ''' Place a report / etc into the database path. '''
-##        if self.is_db_global():
-##            pwd = os.path.dirname(os.path.abspath(__file__))
-##        else:
-##            pwd = os.curdir
-##        return os.path.join(file)
+    def __init__(self, db_file=None):
+        self.db_file = None
+        self.is_global = True
+        if not db_file:
+            self.use_global_db()
+        else:
+            self.use_local_db()
+        if not os.path.exists(self.db_file):
+            self.init_db()
 
     def is_db_global(self):
         ''' See if we're using the global database, or no. '''
-        return self.db_file == DB_NAME
+        return self.is_global
 
     def use_local_db(self):
         ''' Use the PWD / FOLDER database. '''
-        self.db_file = FILE_ROOT
+        self.db_file = os.path.join(os.getcwd(), FILE_ROOT)
+        self.is_global = False
 
     def use_global_db(self):
         ''' Use the MODULE / GLOBAL database. '''
-        self.db_file = DB_NAME
+        root = os.path.dirname(os.path.abspath(__file__))
+        self.db_file = os.path.join(root, FILE_ROOT)
+        self.is_global = True
+
+    def is_same_db(self):
+        ''' Edgy condition - some times they're the same. '''
+        a_root = os.path.dirname(os.path.abspath(__file__))
+        a_db = os.path.join(a_root, FILE_ROOT)
+        b_db = os.path.join(os.getcwd(), FILE_ROOT)
+        return a_db == b_db
 
     def short_db_name(self):
         ''' Print a mnemonic name for the database. '''
@@ -59,7 +65,7 @@ class DoMaster:
 
     def swap_db(self):
         ''' Toggle GLOBAL database on/off. '''
-        if self.db_file == DB_NAME:
+        if self.is_db_global():
             self.use_local_db()
         else:
             self.use_global_db()
@@ -100,31 +106,34 @@ class DoMaster:
 
     def init_db(self):
         ''' Create table if not exist. '''
-        if self.db_file != DB_NAME:
-            print(self.db_file) # Support testing.
-        with sqlite3.connect(self.db_file) as conn:
-            conn.execute(f"""
-                CREATE TABLE IF NOT EXISTS todo (
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    uuid TEXT UNIQUE,
-                    project_name TEXT,
-                    date_created TEXT,
-                    date_done TEXT,
-                    task_description TEXT,
-                    task_priority INTEGER,
-                    next_task INTEGER DEFAULT 0
-                )
-            """)
+        conn = sqlite3.connect(self.db_file)
+        conn.execute(f"""
+            CREATE TABLE IF NOT EXISTS todo (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT UNIQUE,
+                project_name TEXT,
+                date_created TEXT,
+                date_done TEXT,
+                task_description TEXT,
+                task_priority INTEGER,
+                next_task INTEGER DEFAULT 0
+            )
+        """)
+        conn.commit()
+        conn.close()
 
     def count(self):
         ''' Count the items in the TODO table. '''
         try:
-            with sqlite3.connect(self.db_file) as conn:
-                count_query = f"SELECT COUNT(*) FROM todo;"
-                result = conn.execute(count_query)
-                return int(result.fetchone()[0])
+            conn = sqlite3.connect(self.db_file)
+            count_query = f"SELECT COUNT(*) FROM todo;"
+            result = conn.execute(count_query)
+            tally = int(result.fetchone()[0])
+            return tally
         except Exception as ex:
             print(ex)
+        finally:
+            conn.close()
         return 0
 
     def add_task(self):
@@ -135,13 +144,14 @@ class DoMaster:
         pri = input("Priority (Integer): ")
         next_t = input("Next Task ID (Default 0): ") or 0
         
-        with sqlite3.connect(self.db_file) as conn:
-            conn.execute("""INSERT INTO todo (uuid, project_name, date_created, task_description, task_priority, next_task) 
-                         VALUES (?, ?, ?, ?, ?, ?)""", 
-                         (str(uuid.uuid4()),
-                          proj, self.get_now(),
-                          desc, pri, next_t))
-            conn.commit()
+        conn = sqlite3.connect(self.db_file)
+        conn.execute("""INSERT INTO todo (uuid, project_name, date_created, task_description, task_priority, next_task) 
+                     VALUES (?, ?, ?, ?, ?, ?)""", 
+                     (str(uuid.uuid4()),
+                      proj, self.get_now(),
+                      desc, pri, next_t))
+        conn.commit()
+        conn.close()
         print("Task added successfully.")
 
     def delete_task(self)->None:
@@ -152,9 +162,10 @@ class DoMaster:
         tid = input("Enter ID to delete: ").strip()
         if not tid:
             return
-        with sqlite3.connect(self.db_file) as conn:
-            conn.execute(f"DELETE FROM todo WHERE ID = ?", (tid))
-            conn.commit()
+        conn = sqlite3.connect(self.db_file)
+        conn.execute(f"DELETE FROM todo WHERE ID = ?", (tid))
+        conn.commit()
+        conn.close()
 
     def update_task(self)->None:
         ''' Update a task in the database. '''
@@ -184,9 +195,10 @@ class DoMaster:
         if not new_val:
             print("Aborted.")
             return
-        with sqlite3.connect(self.db_file) as conn:
-            conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
-            conn.commit()
+        conn = sqlite3.connect(self.db_file)
+        conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
+        conn.commit()
+        conn.close()
 
     def mark_done(self):
         ''' Date task ID completed. '''
@@ -194,10 +206,12 @@ class DoMaster:
         if not tid:
             print("Aborted.")
             return
-        with sqlite3.connect(self.db_file) as conn:
-            conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?", (self.get_now(), tid))
+        conn = sqlite3.connect(self.db_file)
+        conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?", (self.get_now(), tid))
+        conn.close()
 
     def list_tasks(self,filter_type="all"):
+        print('debug',self.db_file)
         fields = self.get_fields()
         query = f"SELECT {', '.join(fields)} FROM todo"
         if filter_type == "pending":
@@ -205,18 +219,19 @@ class DoMaster:
         elif filter_type == "done":
             query += " WHERE date_done IS NOT NULL AND date_done != ''"        
         query += " ORDER BY project_name ASC, task_priority ASC"        
-        with sqlite3.connect(self.db_file) as conn:
-            conn.row_factory = sqlite3.Row
-            rows = conn.execute(query).fetchall()
-            count = 0
-            for r in rows:
-                count += 1
-                print('*'*15)
-                print(f"ID      : [{r['ID']:03}]", f"   Next: [{r['next_task']:03}]")
-                print(f"Project : [{r['project_name']:<15}]")
-                print(f"Priority: [{r['task_priority']:02}]")
-                print(f"Created : [{r['date_created']:<15}]")
-                print(f"Description: \n\t  [{r['task_description']:<15}]")
+        conn = sqlite3.connect(self.db_file)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(query).fetchall()
+        count = 0
+        for r in rows:
+            count += 1
+            print('*'*15)
+            print(f"ID      : [{r['ID']:03}]", f"   Next: [{r['next_task']:03}]")
+            print(f"Project : [{r['project_name']:<15}]")
+            print(f"Priority: [{r['task_priority']:02}]")
+            print(f"Created : [{r['date_created']:<15}]")
+            print(f"Description: \n\t  [{r['task_description']:<15}]")
+        conn.close()
         print(f"View [{filter_type.upper()}] is {count:03} of {self.count():03} items.")
 
     def export_html(self, status="pending")->int:
@@ -229,16 +244,17 @@ class DoMaster:
         filename = f"{source}_report_{status}_{datetime.date.today()}.html"
         fields = self.get_fields()
         sql_fields = ', '.join(fields)
-        with sqlite3.connect(self.db_file) as conn:
-            conn.row_factory = sqlite3.Row
-            if status == "pending":
-                rows = conn.execute(f"""SELECT {sql_fields} FROM todo
+        conn = sqlite3.connect(self.db_file)
+        conn.row_factory = sqlite3.Row
+        if status == "pending":
+            rows = conn.execute(f"""SELECT {sql_fields} FROM todo
 WHERE date_done IS NULL ORDER BY project_name, task_priority""").fetchall()
-                group_field = 'project_name'
-            else:
-                rows = conn.execute(f"""SELECT {sql_fields} FROM todo
+            group_field = 'project_name'
+        else:
+            rows = conn.execute(f"""SELECT {sql_fields} FROM todo
 WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
-                group_field = 'date_done'
+            group_field = 'date_done'
+        conn.close()
 
         count = 0
         with open(filename, "w") as f:
@@ -280,9 +296,10 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
 
     def project_report(self):
         ''' Show all project names. '''
-        with sqlite3.connect(self.db_file) as conn:
-            projs = conn.execute("SELECT DISTINCT project_name FROM todo ORDER BY project_name").fetchall()
-            for p in projs: print(f"- {p[0]}")
+        conn = sqlite3.connect(self.db_file)
+        projs = conn.execute("SELECT DISTINCT project_name FROM todo ORDER BY project_name").fetchall()
+        for p in projs: print(f"- {p[0]}")
+        conn.close()
 
     def export_csv(self, dated=False)->bool:
         ''' Export to CSV file. '''
@@ -326,12 +343,13 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
         if not self.export_csv(True):
             return
         try:
-            with sqlite3.connect(self.db_file) as conn:
-                conn.execute("DELETE FROM todo WHERE ID IS NOT 0;")
-                conn.commit()
-                print("Success: All tasks removed.")
+            conn = sqlite3.connect(self.db_file)
+            conn.execute("DELETE FROM todo WHERE ID IS NOT 0;")
+            conn.commit()
+            print("Success: All tasks removed.")
         except Exception as ex:
             print(f"Error: Unable to reset {self.db_file}.")
+        finally: conn.close()
 
     def do_quit(self):
         ''' Exit the program '''
@@ -341,7 +359,6 @@ def mainloop():
     ops = DoMaster()
     line = '=' * len(VERSION)
     print(line,VERSION,line, sep='\n')
-    ops.init_db()
     options = {
         'Add Task':ops.add_task,
         'Delete Task':ops.delete_task,
@@ -361,8 +378,11 @@ def mainloop():
     keys = list(options.keys())
     times=0
     while True:
+        ops.init_db()
         print();selection = None
         zdb = 'Db is [GLOBAL]' if ops.is_db_global() else 'Db is [LOCAL]'
+        if ops.is_same_db():
+            zdb = 'Db is [SAME]'
         print(zdb)
         print('~'*10)
         for ss, op in enumerate(keys, 1):
