@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 1.2.1
+# VERSION: 1.3.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
 # DATE: 2026-01-28 06:50:07
 # FILE: main.py
@@ -199,10 +199,7 @@ class DoMaster(Loop):
             print("Invalid field number.")
             return
         del which
-        new_val = self.get_int(f"New value for {field}: ")
-        if not new_val:
-            print("Aborted.")
-            return
+        new_val = input(f"New value for {field}: ")
         conn = sqlite3.connect(self.db_file)
         conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
         conn.commit()
@@ -215,10 +212,13 @@ class DoMaster(Loop):
             print("Aborted.")
             return
         conn = sqlite3.connect(self.db_file)
-        conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?", (self.get_now(), tid))
+        conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?",
+                     (self.get_now(), tid))
+        conn.commit()
         conn.close()
 
-    def list_tasks(self,filter_type="all"):
+    def list_tasks(self,filter_type="all")->int:
+        ''' Returns the number of tasks shown. '''
         print(self.short_db_name())
         fields = self.get_fields()
         query = f"SELECT {', '.join(fields)} FROM todo"
@@ -241,14 +241,19 @@ class DoMaster(Loop):
             print(f"Description: \n\t  [{r['task_description']:<15}]")
         conn.close()
         print(f"View [{filter_type.upper()}] is {count:03} of {self.count():03} items.")
-
+        return count
+    
     def list_pending(self):
         ''' List pending tasks. '''
         self.list_tasks("pending")
 
     def list_done(self):
         ''' List completed tasks. '''
-        self.list_tasks("done")
+        total = self.list_tasks("done")
+        if total and total == self.count():
+            message = "All DONE: You're a DoMaster!"
+            stars = '*' * len(message)
+            print(stars, message, stars, sep='\n')
 
     def list_all(self):
         ''' List all tasks. '''
