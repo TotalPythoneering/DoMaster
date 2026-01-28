@@ -147,7 +147,7 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
         for ss, file in enumerate(files, 1):
             print(f'{ss}.) {file}')
         try:
-            which = int(input('Copy #: '))
+            which = self.get_int('Copy #: ')
             which -= 1
             ofile = files[which]
             nfile = input(f'Copy {ofile} to: ').strip()

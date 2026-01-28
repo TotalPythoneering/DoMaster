@@ -13,6 +13,15 @@ class Loop:
         ''' Prep this loop for looping. '''
         self.b_done = False
 
+    def get_int(self, prompt, default=0):
+        ''' Prompt to return an integral input, else the default value. '''
+        result = default
+        try:
+            result = int(input(prompt))
+        except:
+            pass
+        return result
+
     def is_done(self):
         ''' See if we're ready to exit. '''
         return self.b_done

@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 1.2.0
+# VERSION: 1.2.1
 # NOTES: https://github.com/TotalPythoneering/DoMaster
 # DATE: 2026-01-28 06:50:07
 # FILE: main.py
@@ -67,8 +67,8 @@ class DoMaster(Loop):
     def short_db_name(self):
         ''' Print a mnemonic name for the database. '''
         zfile = self.db_file
-        if len(zfile) > 25:
-            zfile = '...' + zfile[-25:]
+        if len(zfile) > 40:
+            zfile = '...' + zfile[-40:]
         return zfile
 
     def swap_db(self):
@@ -149,8 +149,8 @@ class DoMaster(Loop):
         print("\n--- Add New Task ---")
         proj = input("Project Name: ")
         desc = input("Description: ")
-        pri = input("Priority (Integer): ")
-        next_t = input("Next Task ID (Default 0): ") or 0
+        pri = self.get_int("Priority (Integer): ")
+        next_t = self.get_int("Next Task ID (Default 0): ")
         
         conn = sqlite3.connect(self.db_file)
         conn.execute("""INSERT INTO todo (uuid, project_name, date_created, task_description, task_priority, next_task) 
@@ -167,7 +167,7 @@ class DoMaster(Loop):
         if self.count() == 0:
             print("Database is empty.")
             return 0
-        tid = input("Enter ID to delete: ").strip()
+        tid = self.get_int("Enter ID to delete: ")
         if not tid:
             return
         conn = sqlite3.connect(self.db_file)
@@ -180,7 +180,7 @@ class DoMaster(Loop):
         if self.count() == 0:
             print("Database is empty.")
             return 0
-        tid = input("Enter ID to update: ").strip()
+        tid = self.get_int("Enter ID to update: ")
         if not tid:
             return
         fields = self.get_fields()
@@ -188,7 +188,7 @@ class DoMaster(Loop):
         print("Available fields:")
         for ss, field in enumerate(self.humanize(fields),1):
             print(f'{ss:02}.) {field}') 
-        which = input("Field # to update: ").strip()
+        which = self.get_int("Field # to update: ")
         if not which:
             return
         try:
@@ -199,7 +199,7 @@ class DoMaster(Loop):
             print("Invalid field number.")
             return
         del which
-        new_val = input(f"New value for {field}: ").strip()
+        new_val = self.get_int(f"New value for {field}: ")
         if not new_val:
             print("Aborted.")
             return
@@ -210,7 +210,7 @@ class DoMaster(Loop):
 
     def mark_done(self):
         ''' Date task ID completed. '''
-        tid = input("Enter Task ID to mark as done: ").strip()
+        tid = self.get_int("Enter Task ID to mark as done: ")
         if not tid:
             print("Aborted.")
             return
