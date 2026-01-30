@@ -5,7 +5,7 @@
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
 ## 🌟 STATUS
-Good to go!
+Good to go. Here's [the video](https://youtu.be/Xg3zdm0wZ7I).
 
 ## 🌟 Features
 
