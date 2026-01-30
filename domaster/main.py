@@ -2,7 +2,7 @@
 # STATUS: Production
 # VERSION: 2.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-01-29 05:40:21
+# DATE: 2026-01-30 07:30:14
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -206,11 +206,12 @@ class DoMaster(Loop):
         if self.count() == 0:
             print("Database is empty.")
             return 0
+        self.show_task_numbers()
         tid = self.get_int("Enter ID to delete: ")
         if not tid:
             return
         conn = sqlite3.connect(self.db_file)
-        conn.execute(f"DELETE FROM todo WHERE ID = ?", (tid))
+        conn.execute(f"DELETE FROM todo WHERE ID = {tid}")
         conn.commit()
         conn.close()
 
@@ -219,6 +220,7 @@ class DoMaster(Loop):
         if self.count() == 0:
             print("Database is empty.")
             return 0
+        self.show_task_numbers()
         tid = self.get_int("Enter ID to update: ")
         if not tid:
             return
@@ -254,6 +256,7 @@ class DoMaster(Loop):
 
     def mark_done(self):
         ''' Date task ID completed. '''
+        self.show_task_numbers()
         tid = self.get_int("Enter Task ID to mark as done: ")
         if not tid:
             print("Aborted.")
@@ -270,6 +273,25 @@ class DoMaster(Loop):
                      (self.get_now(), tid))
         conn.commit()
         conn.close()
+
+    def get_task_numbers(self)->list:
+        ''' Return the ID's of all tasks. '''
+        result = []
+        query =  f"SELECT ID FROM todo ORDER BY ID"        
+        conn = sqlite3.connect(self.db_file)
+        rows = conn.execute(query).fetchall()
+        for id_num in rows:
+            result.append(id_num[0])
+        conn.close()
+        return result
+
+    def show_task_numbers(self, wide=12)->None:
+        ''' Display the ID's of all tasks. '''
+        for ss, id_num in enumerate(self.get_task_numbers(), 1):
+            if ss % wide == 0:
+                print()
+            print(f'#[{id_num:03}] ', end = '')
+        print()
 
     def list_tasks(self,filter_type="all")->int:
         ''' Returns the number of tasks shown. '''

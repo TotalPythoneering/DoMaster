@@ -1,8 +1,8 @@
-# MISSION: Manage export files.
-# STATUS: Research
-# VERSION: 0.0.1
-# NOTES: Lighty tested. See the project for full documentation.
-# DATE: 2026-01-28 06:56:45
+# MISSION: Manage HTML reports, backups, and exported data files.
+# STATUS: Production
+# VERSION: 1.0.0
+# NOTES: Works well.
+# DATE: 2026-01-30 07:31:20
 # FILE: manage_files.py
 # AUTHOR: Randall Nagy
 #
@@ -57,8 +57,13 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
                 f.write('<hr>')
                 count += 1
                 for tag in adict:
+                    value = adict[tag]
+                    if tag == 'next_task':
+                        post = self.db.read_row_for_uuid(value)
+                        if post:
+                            value = post['ID']
                     htag = self.db.humanize(tag)
-                    f.write(f"<b>{htag}:</b>&nbsp;&nbsp;{adict[tag]}<br>")
+                    f.write(f"<b>{htag}:</b>&nbsp;&nbsp;{value}<br>")
         print(f"Report exported to {filename}")
         return count
 
