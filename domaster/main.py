@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 1.3.1
+# VERSION: 2.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
 # DATE: 2026-01-29 05:40:21
 # FILE: main.py
@@ -128,7 +128,7 @@ class DoMaster(Loop):
                 date_done TEXT,
                 task_description TEXT,
                 task_priority INTEGER,
-                next_task INTEGER DEFAULT 0
+                next_task TEXT
             )
         """)
         conn.commit()
@@ -155,6 +155,13 @@ class DoMaster(Loop):
         desc = input("Description: ")
         pri = self.get_int("Priority (Integer): ")
         next_t = self.get_int("Next Task ID (Default 0): ")
+        if next_t:
+            ref_task = self.read_row_for_id(next_t)
+            if ref_task:
+                next_t = ref_task['uuid']
+            else:
+                print(f"Task #{next_t} not found. Set to Zero.")
+                next_t = 0
         
         conn = sqlite3.connect(self.db_file)
         conn.execute("""INSERT INTO todo (uuid, project_name, date_created, task_description, task_priority, next_task) 
@@ -165,6 +172,34 @@ class DoMaster(Loop):
         conn.commit()
         conn.close()
         print("Task added successfully.")
+
+    def read_row_for_uuid(self, next_t:str)->dict:
+        ''' Lookup a task by uuid. None if not found. '''
+        try:
+            conn = sqlite3.connect(self.db_file)
+            conn.row_factory = sqlite3.Row
+            res = conn.execute(f'SELECT * FROM todo WHERE uuid = "{next_t}" LIMIT 1;')
+            if res:
+                return dict(res.fetchone())
+        except:
+            pass
+        finally:
+            conn.close()
+        return None
+
+    def read_row_for_id(self, next_t:int)->dict:
+        ''' Lookup a task by primary key. None if not found. '''
+        try:
+            conn = sqlite3.connect(self.db_file)
+            conn.row_factory = sqlite3.Row
+            res = conn.execute(f'SELECT * FROM todo WHERE ID = {next_t} LIMIT 1;')
+            if res:
+                return dict(res.fetchone())
+        except:
+            pass
+        finally:
+            conn.close()
+        return None
 
     def delete_task(self)->None:
         ''' Remove a task from the database. '''
@@ -204,6 +239,14 @@ class DoMaster(Loop):
             return
         del which
         new_val = input(f"New value for {field}: ")
+        if field == 'next_task':
+            a_row = self.read_row_for_id(new_val)
+            if a_row:
+                new_val = a_row['uuid']
+            else:
+                new_val = 0
+                print(f"Task #{new_val} not found. Set to Zero.")
+                
         conn = sqlite3.connect(self.db_file)
         conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
         conn.commit()
@@ -215,8 +258,15 @@ class DoMaster(Loop):
         if not tid:
             print("Aborted.")
             return
+        row = self.read_row_for_id(tid)
+        if not row:
+            print(f"Task #{tid} not found.")
+            return
+        else:
+            tid = row['uuid']
+            
         conn = sqlite3.connect(self.db_file)
-        conn.execute("UPDATE todo SET date_done = ? WHERE ID = ?",
+        conn.execute("UPDATE todo SET date_done = ? WHERE uuid = ?",
                      (self.get_now(), tid))
         conn.commit()
         conn.close()
@@ -225,7 +275,7 @@ class DoMaster(Loop):
         ''' Returns the number of tasks shown. '''
         print(self.short_db_name())
         fields = self.get_fields()
-        query = f"SELECT {', '.join(fields)} FROM todo"
+        query = f"SELECT * FROM todo"
         if filter_type == "pending":
             query += " WHERE date_done IS NULL OR date_done = ''"
         elif filter_type == "done":
@@ -236,9 +286,14 @@ class DoMaster(Loop):
         rows = conn.execute(query).fetchall()
         count = 0
         for r in rows:
+            zrow = self.read_row_for_uuid(r['next_task'])
+            if zrow:
+                next_t = zrow['ID']
+            else:
+                next_t = 0
             count += 1
             print('*'*15)
-            print(f"ID      : [{r['ID']:03}]", f"   Next: [{r['next_task']:03}]")
+            print(f"ID      : [{r['ID']:03}]", f"   Next: [{next_t:03}]")
             print(f"Project : [{r['project_name']:<15}]")
             print(f"Priority: [{r['task_priority']:02}]")
             print(f"Created : [{r['date_created']:<15}]")
