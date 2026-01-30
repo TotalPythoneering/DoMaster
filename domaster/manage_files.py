@@ -31,19 +31,14 @@ class ManageFiles(Loop):
             return 0
         source = 'global' if self.db.is_db_global() else 'local'
         filename = f"{source}_report_{status}_{datetime.date.today()}.html"
-        fields = self.db.get_fields()
-        sql_fields = ', '.join(fields)
         conn = sqlite3.connect(self.db.db_file)
         conn.row_factory = sqlite3.Row
-        if status == "pending":
-            rows = conn.execute(f"""SELECT {sql_fields} FROM todo
-WHERE date_done IS NULL ORDER BY project_name, task_priority""").fetchall()
+        query = self.db.get_list_query(status)
+        rows = conn.execute(query).fetchall()
+        if  status == "pending":
             group_field = 'project_name'
         else:
-            rows = conn.execute(f"""SELECT {sql_fields} FROM todo
-WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
             group_field = 'date_done'
-        conn.close()
 
         count = 0
         with open(filename, "w") as f:
@@ -53,9 +48,10 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
                 if r[group_field] != current_group:
                     current_group = r[group_field]
                     f.write(f"<h2>{current_group}</h2>")
-                adict = dict(zip(fields, r))
                 f.write('<hr>')
                 count += 1
+                adict = dict(r)
+                del adict['uuid']
                 for tag in adict:
                     value = adict[tag]
                     if tag == 'next_task':
@@ -65,6 +61,7 @@ WHERE date_done IS NOT NULL ORDER BY date_done DESC""").fetchall()
                     htag = self.db.humanize(tag)
                     f.write(f"<b>{htag}:</b>&nbsp;&nbsp;{value}<br>")
         print(f"Report exported to {filename}")
+        conn.close()
         return count
 
     def html_report(self):

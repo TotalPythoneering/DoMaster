@@ -293,16 +293,20 @@ class DoMaster(Loop):
             print(f'#[{id_num:03}] ', end = '')
         print()
 
-    def list_tasks(self,filter_type="all")->int:
-        ''' Returns the number of tasks shown. '''
-        print(self.short_db_name())
-        fields = self.get_fields()
+    def get_list_query(self, filter_type):
         query = f"SELECT * FROM todo"
         if filter_type == "pending":
             query += " WHERE date_done IS NULL OR date_done = ''"
         elif filter_type == "done":
             query += " WHERE date_done IS NOT NULL AND date_done != ''"        
-        query += " ORDER BY project_name ASC, task_priority ASC"        
+        query += " ORDER BY project_name ASC, task_priority ASC"
+        return query
+
+    def list_tasks(self,filter_type="all")->int:
+        ''' Returns the number of tasks shown. '''
+        print(self.short_db_name())
+        fields = self.get_fields()
+        query = self.get_list_query(filter_type)
         conn = sqlite3.connect(self.db_file)
         conn.row_factory = sqlite3.Row
         rows = conn.execute(query).fetchall()
