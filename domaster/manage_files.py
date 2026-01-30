@@ -1,8 +1,8 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.0.0
+# VERSION: 1.0.1
 # NOTES: Works well.
-# DATE: 2026-01-30 07:31:20
+# DATE: 2026-01-30 18:25:39
 # FILE: manage_files.py
 # AUTHOR: Randall Nagy
 #
@@ -66,6 +66,9 @@ class ManageFiles(Loop):
 
     def html_report(self):
         ''' Create the HTML Report. '''
+        if self.db.count() == 0:
+            print("Database is empty.")
+            return
         total_pending = self.export_html("pending")
         total_done    = self.export_html("done")
         if total_pending == total_done == 0:
