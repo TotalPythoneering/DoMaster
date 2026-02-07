@@ -1,6 +1,6 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.0.2
+# VERSION: 1.0.3
 # NOTES: Works well.
 # DATE: 2026-01-31 03:53:55
 # FILE: manage_files.py
@@ -136,7 +136,7 @@ class ManageFiles(Loop):
             return
         folder = Keeps.get_option("backup", default_value=None)
         if folder:
-            yn = input(f"Export to [{folder}]? y/n").strip().lower()
+            yn = input(f"Export to [{folder}]? y/n ").strip().lower()
             if yn and yn[0] != 'y':
                 folder = None
         if not self.export_csv(True, folder=folder):

@@ -1,8 +1,10 @@
 # MISSION: Manage AUTOMATIC ARCHIVAL options.
 # STATUS: Research
-# VERSION: 0.0.1
+# VERSION: 0.0.2
 # NOTES: Package database needs to be backed-up. Even auto.
 # This class keeps the location + data for ARCHIVAL 'ops.
+# DATE: 2026-02-07 13:36:38
+# FILE: manage_archive.py
 # AUTHOR: Randall Nagy
 #
 import os, sys, shutil
@@ -29,7 +31,7 @@ class ManageArchived(Loop):
         print(f'Archive folder is [{folder}].')
         folder = input("Backup folder: ").strip()
         if not folder:
-            yn = input("Clear archive option? y/n").lower()
+            yn = input("Clear archive option? y/n ").lower()
             if yn[0] != 'y':
                 print("Aborted.")
                 return False
@@ -50,6 +52,8 @@ class ManageArchived(Loop):
         return True
 
     def safe_clone(self, source, archive)->True:
+        source = source.replace(r'\\','/')
+        archive= archive.replace(r'\\','/')
         if not os.path.exists(source):
             print(f"Error: Unable to stat [{source}].")
             return False
