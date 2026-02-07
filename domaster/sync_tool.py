@@ -19,12 +19,12 @@ format's metadata for the table. include a robust
 set of test cases.
 '''
 import os, sys
-import csv
+import csv, uuid
 import sqlite3
 
 try:
     if '..' not in sys.path:
-        sys.path.append('..')
+        sys.path.insert(0,'..')
     from domaster.upsert import UpsertSqlite
 except Exception as ex:
     pass
@@ -61,7 +61,7 @@ class SQLiteCSVSync:
                 writer.writerows(rows)
         return os.path.exists(csv_file)
 
-    def import_from_csv(self, csv_file):
+    def import_from_csv(self, csv_file)->int:
         """ Import CSV data using 'uuid' as the key for UPSERT logic.
             Returns the number of rows imported.
         """
@@ -71,23 +71,44 @@ class SQLiteCSVSync:
         columns = self._get_column_names()
         if 'uuid' not in columns:
             raise ValueError("Table must have a 'uuid' column for synchronization.")
+
+        # Create a uuid for any lacking same.
+        inventory = []
+        with open(csv_file, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if not row['uuid']:
+                    row['uuid'] = uuid.uuid4()
+                inventory.append(row)
+
+        # Approve effect of data imporatation.
+        conn = sqlite3.connect(self.db_path)
+        new_rows = 0; old_rows = 0
+        for row in inventory:
+            next_t = row['uuid']
+            res = conn.execute(f'SELECT * FROM todo WHERE uuid = "{next_t}" LIMIT 1;')
+            if res:
+                old_rows += 1
+            else:
+                new_rows += 1
+        conn.close()
+        yn = input(f'Ok to update {old_rows} and create {new_rows} todo items? y/n ').strip().lower()
+        if not yn or yn[0] != 'y':
+            print('Aborted.')
+            return -1
+        print("Updating database ...")
         
         # Dynamic UPSERT query construction
         placeholders = ", ".join(["?"] * len(columns))
         col_list = ", ".join(columns)
         update_set = ", ".join([f"{col} = excluded.{col}" for col in columns if col != 'uuid'])
-
         upsert_sql = f"""
             INSERT INTO {self.table_name} ({col_list})
             VALUES ({placeholders})
             ON CONFLICT(uuid) DO UPDATE SET {update_set}
         """
-
         with sqlite3.connect(self.db_path) as conn:
-            with open(csv_file, 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                # Map CSV rows to tuple based on detected column order
-                data = [tuple(row[col] for col in columns) for row in reader]
-                conn.executemany(upsert_sql, data)
-                conn.commit()
+            data = [tuple(row[col] for col in columns) for row in inventory]
+            conn.executemany(upsert_sql, data)
+            conn.commit()
         return len(data)

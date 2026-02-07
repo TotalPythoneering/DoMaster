@@ -1,8 +1,8 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.0.1
+# VERSION: 1.0.2
 # NOTES: Works well.
-# DATE: 2026-01-30 18:25:39
+# DATE: 2026-01-31 03:53:55
 # FILE: manage_files.py
 # AUTHOR: Randall Nagy
 #
@@ -13,7 +13,7 @@ import csv
 import datetime
 
 if '..' not in sys.path:
-    sys.path.append('..')
+    sys.path.insert(0,'..')
 from domaster.tui_loop import Loop
 from domaster.sync_tool import SQLiteCSVSync
 
@@ -22,6 +22,11 @@ class ManageFiles(Loop):
     def __init__(self, db):
         super().__init__()
         self.db = db
+
+    def archive_options(self):
+        ''' Database archival options. '''
+        from domaster.manage_archive import ManageArchived
+        return ManageArchived(self.db).mainloop()
 
     def export_html(self, status="pending")->int:
         # TODO: Add CSS (et al.)
@@ -76,7 +81,7 @@ class ManageFiles(Loop):
         else:
             print(f'Pending: {total_pending:03}, Done: {total_done:03}')
 
-    def export_csv(self, dated=False)->bool:
+    def export_csv(self, dated=False, folder=None)->bool:
         ''' Export to CSV file. '''
         if self.db.count() == 0:
             print("Database is empty.")
@@ -90,9 +95,19 @@ class ManageFiles(Loop):
             print(f'Saved older {zfile} as {ztmp}.')
         if dated:
             zfile =  f'~domaster_backup_{safe}.csv'
-        br = mgr.export_to_csv(zfile)
-        if not br:
+        if folder:
+            # DEFER TO USER-SPECIFIED ARCHIVE PATH
+            if not os.path.exists(folder):
+                print(f"Folder [{folder}] not found.")
+                return False
+            zfile = os.sep.join((folder, zfile))
+        num = mgr.export_to_csv(zfile)
+        if num == -1:
+            return False # error abort
+        br = True
+        if not num:
             print(f"Error: Unable to export {zfile} file.")
+            br = False
         else:
             print(f"Success: Exported {zfile}.")
         return br
@@ -119,7 +134,12 @@ class ManageFiles(Loop):
         if not cando or cando[0] != 'y':
             print("Aborted.")
             return
-        if not self.export_csv(True):
+        folder = Keeps.get_option("backup", default_value=None)
+        if folder:
+            yn = input(f"Export to [{folder}]? y/n").strip().lower()
+            if yn and yn[0] != 'y':
+                folder = None
+        if not self.export_csv(True, folder=folder):
             return
         try:
             conn = sqlite3.connect(self.db.db_file)
@@ -194,6 +214,7 @@ class ManageFiles(Loop):
     def mainloop(ops)->None:
         options = {
             'HTML Report':ops.html_report,
+            'Archive':ops.archive_options,
             'Export Data':ops.export_csv,
             'Import Data':ops.import_csv,
             'Reset Database':ops.backup_and_empty,

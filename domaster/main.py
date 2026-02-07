@@ -1,25 +1,29 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 2.0.0
+# VERSION: 3.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-01-30 07:30:14
+# DATE: 2026-02-07 06:00:39
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
 import os, sys, shutil
+from pathlib import Path
 import sqlite3
 import uuid
 import csv
 import datetime
 
 if '..' not in sys.path:
-    sys.path.append('..')
+    sys.path.insert(0, '..')
 from domaster.upsert import UpsertSqlite
 from domaster.tui_loop import Loop
 from domaster.manage_files import ManageFiles
 
-FILE_ROOT = "domaster.db"
-VERSION = "DoMaster 2026.01.27"
+APP_NAME  = "DoMaster"
+FILE_TYPE = ".DoMstr1"
+FILE_ROOT = APP_NAME + FILE_TYPE
+VERSION   = APP_NAME + " 2026.02.07"
+DATA_TYPE = ".options"
 
 class DoMaster(Loop):
     def __init__(self, db_file=None):
