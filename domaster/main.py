@@ -2,7 +2,6 @@
 # STATUS: Production
 # VERSION: 3.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-02-08 10:30:56
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -23,8 +22,8 @@ from domaster.manage_archive import ManageArchived
 from domaster.keeper import Keeps
 
 APP_NAME  = "DoMaster"
-FILE_TYPE = ".DoMstr1"
-FILE_ROOT = APP_NAME + FILE_TYPE
+FILE_TYPE = ".db"
+FILE_ROOT = "domaster" + FILE_TYPE
 VERSION   = APP_NAME + " 2026.02.07"
 DATA_TYPE = ".options"
 

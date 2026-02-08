@@ -36,7 +36,8 @@ class SQLiteCSVSync:
 
     def _get_column_names(self):
         """Automatically detects table column names from metadata."""
-        with sqlite3.connect(self.db_path) as conn:
+        conn = sqlite3.connect(self.db_path)
+        try:
             cursor = conn.cursor()
             # PRAGMA table_info returns (id, name, type, notnull, default_value, pk)
             cursor.execute(f"PRAGMA table_info({self.table_name})")
@@ -44,13 +45,18 @@ class SQLiteCSVSync:
             if not columns:
                 raise ValueError(f"Table '{self.table_name}' not found or empty.")
             return UpsertSqlite.JunkId(columns)
+        except:
+            pass
+        finally:
+            conn.close()
 
     def export_to_csv(self, csv_file)->bool:
         """ Export all data from the detected table to a CSV file.
             Return True on success.
         """
         columns = self._get_column_names()
-        with sqlite3.connect(self.db_path) as conn:
+        conn = sqlite3.connect(self.db_path)
+        try:
             cursor = conn.cursor()
             cursor.execute(f"SELECT {', '.join(columns)} FROM {self.table_name}")
             rows = cursor.fetchall()
@@ -59,6 +65,10 @@ class SQLiteCSVSync:
                 writer = csv.writer(f)
                 writer.writerow(columns) # Header
                 writer.writerows(rows)
+        except:
+            pass
+        finally:
+            conn.close()
         return os.path.exists(csv_file)
 
     def import_from_csv(self, csv_file)->int:
@@ -107,8 +117,13 @@ class SQLiteCSVSync:
             VALUES ({placeholders})
             ON CONFLICT(uuid) DO UPDATE SET {update_set}
         """
-        with sqlite3.connect(self.db_path) as conn:
+        conn = sqlite3.connect(self.db_path)
+        try:
             data = [tuple(row[col] for col in columns) for row in inventory]
             conn.executemany(upsert_sql, data)
             conn.commit()
+        except:
+            pass
+        finally:
+            conn.close()
         return len(data)

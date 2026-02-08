@@ -16,6 +16,7 @@ if '..' not in sys.path:
     sys.path.insert(0,'..')
 from domaster.tui_loop import Loop
 from domaster.sync_tool import SQLiteCSVSync
+from domaster.keeper import Keeps
 
 class ManageFiles(Loop):
 
@@ -145,14 +146,15 @@ class ManageFiles(Loop):
                 folder = None
         if not self.export_csv(True, folder=folder):
             return
+        conn = sqlite3.connect(self.db.db_file)
         try:
-            conn = sqlite3.connect(self.db.db_file)
             conn.execute("DELETE FROM todo WHERE ID IS NOT 0;")
             conn.commit()
             print("Success: All tasks removed.")
         except Exception as ex:
             print(f"Error: Unable to reset {self.db.db_file}.")
-        finally: conn.close()
+        finally:
+            conn.close()
 
     def get_artis(self)->list:
         ''' List the arifacts, if any. '''
