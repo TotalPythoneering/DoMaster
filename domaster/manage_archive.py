@@ -1,9 +1,9 @@
 # MISSION: Manage AUTOMATIC ARCHIVAL options.
 # STATUS: Research
 # VERSION: 0.0.2
-# NOTES: Package database needs to be backed-up. Even auto.
-# This class keeps the location + data for ARCHIVAL 'ops.
-# DATE: 2026-02-07 13:36:38
+# NOTES: GLOBAL database needs to be backed-up. Even auto.
+# ManageArchived keeps the location + data for ARCHIVAL 'ops.
+# DATE: 2026-02-08 10:34:35
 # FILE: manage_archive.py
 # AUTHOR: Randall Nagy
 #
@@ -62,7 +62,7 @@ class ManageArchived(Loop):
                 os.unlink(archive)
                 if os.path.exists(archive):
                     print(f"Error: Unable to delete [{archive}].")
-                return False
+                    return False
             shutil.copyfile(source, archive)
             if not os.path.exists(archive):
                 print(f"Error: Unable to create [{archive}].")
@@ -90,8 +90,18 @@ class ManageArchived(Loop):
 
     def auto_archive(self):
         ''' Toggle automatic archive. '''
-        # Use + wire-in Keeps to main.py
-        pass
+        auto = br = Keeps.get_option('auto_backup')
+        if br:
+            br = Keeps.add_option('auto_backup', False)
+            auto = False
+        else:
+            br = Keeps.add_option('auto_backup', True)
+            auto = True
+        if not br:
+            print("Error: Unable to toggle database auto.")
+            return
+        stat = "On" if auto else "Off"
+        print(f"Automatic database backup is now [{stat}]")
     
     def mainloop(ops)->None:
         if not ops.mega.is_global:
@@ -101,7 +111,7 @@ class ManageArchived(Loop):
             'Archive Folder':ops.assign_archive,
             'Create Archive':ops.create_archive,
             'Restore Archive':ops.restore_archive,
-#           'Auto Archive':ops.auto_archive,
+            'Auto Archive':ops.auto_archive,
             'Quit':ops.do_quit
             }
         folder = Keeps.get_option('backup', default_value="unspecified")

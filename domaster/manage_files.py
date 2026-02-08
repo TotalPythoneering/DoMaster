@@ -1,6 +1,6 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.0.3
+# VERSION: 1.1.0
 # NOTES: Works well.
 # DATE: 2026-01-31 03:53:55
 # FILE: manage_files.py
@@ -28,14 +28,13 @@ class ManageFiles(Loop):
         from domaster.manage_archive import ManageArchived
         return ManageArchived(self.db).mainloop()
 
-    def export_html(self, status="pending")->int:
+
+    def export_html_file(self, filename, status="pending")->int:
         # TODO: Add CSS (et al.)
-        ''' Generate the HTML report. Returns number exported. '''
+        ''' Generate the HTML report into file. Returns number exported. '''
         if self.db.count() == 0:
             print("Database is empty.")
             return 0
-        source = 'global' if self.db.is_db_global() else 'local'
-        filename = f"{source}_report_{status}_{datetime.date.today()}.html"
         conn = sqlite3.connect(self.db.db_file)
         conn.row_factory = sqlite3.Row
         query = self.db.get_list_query(status)
@@ -44,7 +43,6 @@ class ManageFiles(Loop):
             group_field = 'project_name'
         else:
             group_field = 'date_done'
-
         count = 0
         with open(filename, "w") as f:
             f.write(f"<html><body><h1>DoMaster [{status.upper()}] Report</h1>")
@@ -68,6 +66,12 @@ class ManageFiles(Loop):
         print(f"Report exported to {filename}")
         conn.close()
         return count
+
+    def export_html(self, status="pending")->int:
+        ''' Name + generate the HTML report. Returns number exported. '''
+        source = 'global' if self.db.is_db_global() else 'local'
+        filename = f"{source}_report_{status}_{datetime.date.today()}.html"
+        return self.export_html_file(filename, status)
 
     def html_report(self):
         ''' Create the HTML Report. '''

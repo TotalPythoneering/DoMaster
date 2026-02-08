@@ -2,7 +2,7 @@
 # STATUS: Production
 # VERSION: 3.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-02-07 06:00:39
+# DATE: 2026-02-08 10:30:56
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -18,6 +18,9 @@ if '..' not in sys.path:
 from domaster.upsert import UpsertSqlite
 from domaster.tui_loop import Loop
 from domaster.manage_files import ManageFiles
+from domaster.manage_archive import ManageArchived
+
+from domaster.keeper import Keeps
 
 APP_NAME  = "DoMaster"
 FILE_TYPE = ".DoMstr1"
@@ -36,6 +39,16 @@ class DoMaster(Loop):
             self.use_local_db()
         if not os.path.exists(self.db_file):
             self.init_db()
+
+    def do_quit(self):
+        ''' Quit DoMaster '''
+        if Keeps.get_option('auto_backup'):
+            util = ManageArchived(self)
+            if util.create_archive():
+                print("Success: Backup created.")
+            else:
+                print("Warning: Auto backup failure.")
+        super().do_quit()
 
     def loop_status(self, **kwargs):
         if kwargs['errors'] > 12:
@@ -219,6 +232,25 @@ class DoMaster(Loop):
         conn.commit()
         conn.close()
 
+    def display(self, row):
+        if not row:
+            print("Unable to display [{row}].")
+            return
+        print('~'*15)
+        print(f"ID      : [{row['ID']:03}]", f"   Next: [{row['next_task']:03}]")
+        print(f"Project : [{row['project_name']:<15}]")
+        print(f"Priority: [{row['task_priority']:02}]")
+        print(f"Created : [{row['date_created']:<15}]")
+        print(f"Description: \n\t  [{row['task_description']:<15}]")
+
+    def display_task_id(self, tid)->bool:
+        a_row = self.read_row_for_id(tid)
+        if not a_row:
+            print(f"No task @[{tid}].")
+            return False
+        self.display(a_row)
+        return True
+
     def update_task(self)->None:
         ''' Update a task in the database. '''
         if self.count() == 0:
@@ -230,8 +262,10 @@ class DoMaster(Loop):
             return
         fields = self.get_fields()
         fields.remove('ID')
-        print("Available fields:")
-        for ss, field in enumerate(self.humanize(fields),1):
+        if not self.display_task_id(tid):
+            return
+        print("\nAvailable fields:")
+        for ss, field in enumerate(self.humanize(fields),1):            
             print(f'{ss:02}.) {field}') 
         which = self.get_int("Field # to update: ")
         if not which:
@@ -270,8 +304,7 @@ class DoMaster(Loop):
             print(f"Task #{tid} not found.")
             return
         else:
-            tid = row['uuid']
-            
+            tid = row['uuid']            
         conn = sqlite3.connect(self.db_file)
         conn.execute("UPDATE todo SET date_done = ? WHERE uuid = ?",
                      (self.get_now(), tid))
@@ -322,12 +355,7 @@ class DoMaster(Loop):
             else:
                 next_t = 0
             count += 1
-            print('*'*15)
-            print(f"ID      : [{r['ID']:03}]", f"   Next: [{next_t:03}]")
-            print(f"Project : [{r['project_name']:<15}]")
-            print(f"Priority: [{r['task_priority']:02}]")
-            print(f"Created : [{r['date_created']:<15}]")
-            print(f"Description: \n\t  [{r['task_description']:<15}]")
+            self.display(r)
         conn.close()
         print(f"View [{filter_type.upper()}] is {count:03} of {self.count():03} items.")
         return count
