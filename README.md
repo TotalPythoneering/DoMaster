@@ -2,6 +2,8 @@
 
 **DoMaster** is a robust, lightweight Console Terminal User Interface (TUI) task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
+New **database backup** feature can now clone our GLOBAL database to another location.
+
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
 ## 🌟 STATUS
@@ -17,6 +19,7 @@ Good to go. Here's [the video](https://youtu.be/Xg3zdm0wZ7I).
   - **Pending Report**: HTML export grouped by project and ordered by priority.
   - **Completion Report**: HTML export grouped by date and ordered by completion time.
 - **Database Mobility**: Built-in functions to dump, empty, and load database files with 2026-compliant timestamps.
+- **Database Backup**: Supports on-demand and automatic on-exit GLOBAL database backups.
 
 ## 📊 Database Schema (Table: `todo`)
 
