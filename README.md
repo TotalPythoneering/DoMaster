@@ -7,7 +7,11 @@ Forever free & open **DoMaster** allows us to manage any infinite list of action
 A new **database backup** feature can now clone our GLOBAL database to another location.
 
 ## 🌟 STATUS
-Good to go. Here's [the video](https://youtu.be/Xg3zdm0wZ7I).
+Good to go. Use the 'pip installer in the dist folder.
+
+Here is a [primer video](https://youtu.be/Xg3zdm0wZ7I).
+
+Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j7lk9PRjyE).
 
 ## 🌟 Features
 
@@ -64,6 +68,7 @@ Happy 'Spire-ring!
 🫡 
 
 (*) and yes, with care we might even *export* from one `Db` to *import* into the other.
+
 
 
 
