@@ -2,6 +2,7 @@
 # STATUS: Production
 # VERSION: 3.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
+# DATE: 2026-02-08 11:07:12
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -236,11 +237,11 @@ class DoMaster(Loop):
             print("Unable to display [{row}].")
             return
         print('~'*15)
-        print(f"ID      : [{row['ID']:03}]", f"   Next: [{row['next_task']:03}]")
-        print(f"Project : [{row['project_name']:<15}]")
-        print(f"Priority: [{row['task_priority']:02}]")
-        print(f"Created : [{row['date_created']:<15}]")
-        print(f"Description: \n\t  [{row['task_description']:<15}]")
+        print(f"ID      : [{row['ID']}]", f"   Next: [{row['next_task']}]")
+        print(f"Project : [{row['project_name']}]")
+        print(f"Priority: [{row['task_priority']}]")
+        print(f"Created : [{row['date_created']}]")
+        print(f"Description: \n\t  [{row['task_description']}]")
 
     def display_task_id(self, tid)->bool:
         a_row = self.read_row_for_id(tid)
