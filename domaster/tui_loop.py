@@ -76,8 +76,10 @@ class Loop:
                         options[selection]()
                 else:
                     print(f"Invalid number {which}.")
+            except ValueError:
+                print("Numbers only, please.")
+                continue
             except Exception as ex:
                 print(ex)
-                print("Numbers only, please.")
                 continue
         return True
