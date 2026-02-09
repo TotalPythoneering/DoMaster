@@ -4,7 +4,7 @@
 
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
-New **database backup** feature can now clone our GLOBAL database to another location.
+A new **database backup** feature can now clone our GLOBAL database to another location.
 
 ## 🌟 STATUS
 Good to go. Here's [the video](https://youtu.be/Xg3zdm0wZ7I).
@@ -64,7 +64,6 @@ Happy 'Spire-ring!
 🫡 
 
 (*) and yes, with care we might even *export* from one `Db` to *import* into the other.
-
 
 
 
