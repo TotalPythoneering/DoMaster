@@ -1,8 +1,8 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.1.0
+# VERSION: 1.1.1
 # NOTES: Works well.
-# DATE: 2026-01-31 03:53:55
+# DATE: 2026-02-10 01:16:49
 # FILE: manage_files.py
 # AUTHOR: Randall Nagy
 #
@@ -184,8 +184,6 @@ class ManageFiles(Loop):
             if not nfile:
                 print("Aborted.")
                 return
-            if not nfile.lower().endswith('.csv'):
-                nfile += '.csv'
             if os.path.exists(nfile):
                 print(f'File {nfile} already exists.')
                 print('Please use another file name.')

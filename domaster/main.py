@@ -1,8 +1,8 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 3.0.0
+# VERSION: 3.0.1
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-02-08 11:07:12
+# DATE: 2026-02-10 01:30:08
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -47,7 +47,7 @@ class DoMaster(Loop):
             if util.create_archive():
                 print("Success: Backup created.")
             else:
-                print("Warning: Auto backup failure.")
+                print("Warning: Auto backup ignored.")
         super().do_quit()
 
     def loop_status(self, **kwargs):
@@ -324,7 +324,7 @@ class DoMaster(Loop):
 
     def show_task_numbers(self, wide=12)->None:
         ''' Display the ID's of all tasks. '''
-        for ss, id_num in enumerate(self.get_task_numbers(), 1):
+        for ss, id_num in enumerate(self.get_task_numbers()):
             if ss % wide == 0:
                 print()
             print(f'#[{id_num:03}] ', end = '')
