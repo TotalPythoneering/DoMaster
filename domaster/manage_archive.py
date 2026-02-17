@@ -29,9 +29,9 @@ class ManageArchived(Loop):
         ''' Set archive location. '''
         folder = Keeps.get_option('backup', default_value="unspecified")
         self.print(f'Archive folder is [{folder}].')
-        folder = input("Backup folder: ").strip()
+        folder = self.input("Backup folder: ").strip()
         if not folder:
-            yn = input("Clear archive option? y/n ").lower()
+            yn = self.input("Clear archive option? y/n ").lower()
             if yn[0] != 'y':
                 self.print("Aborted.")
                 return False
@@ -47,7 +47,7 @@ class ManageArchived(Loop):
 
     def _is_ok(self, yikes)->bool:
         if os.path.exists(yikes):
-            yn = input(f"Ok to replace {yikes}? y/n ").lower()
+            yn = self.input(f"Ok to replace {yikes}? y/n ").lower()
             return yn[0] == 'y'
         return True
 

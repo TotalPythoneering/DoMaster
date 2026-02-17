@@ -1,6 +1,6 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.1.2
+# VERSION: 1.2.0
 # NOTES: Works well.
 # DATE: 2026-02-10 01:16:49
 # FILE: manage_files.py
@@ -91,7 +91,7 @@ class ManageFiles(Loop):
         if self.db.count() == 0:
             self.print("Database is empty.")
             return False
-        mgr = SQLiteCSVSync(self.db.db_file, 'todo')
+        mgr = SQLiteCSVSync(self.db.db_file, 'todo', self)
         zfile = 'domaster.csv'
         safe = self.db.get_now().replace(':','-').replace(' ','@')
         if os.path.exists(zfile):
@@ -120,7 +120,7 @@ class ManageFiles(Loop):
 
     def import_csv(self, file_name=None)->bool:
         ''' Import CSV file into the database. '''
-        mgr = SQLiteCSVSync(self.db.db_file, 'todo')
+        mgr = SQLiteCSVSync(self.db.db_file, 'todo', self)
         zfile = 'domaster.csv'
         if file_name:
             zfile = file_name
@@ -136,13 +136,13 @@ class ManageFiles(Loop):
         if self.db.count() == 0:
             self.print("Database is empty.")
             return
-        cando = input("Okay to blank the database? ").strip().lower()
+        cando = self.input("Okay to blank the database? ").strip().lower()
         if not cando or cando[0] != 'y':
             self.print("Aborted.")
             return
         folder = Keeps.get_option("backup", default_value=None)
         if folder:
-            yn = input(f"Export to [{folder}]? y/n ").strip().lower()
+            yn = self.input(f"Export to [{folder}]? y/n ").strip().lower()
             if yn and yn[0] != 'y':
                 folder = None
         if not self.export_csv(True, folder=folder):
@@ -181,7 +181,7 @@ class ManageFiles(Loop):
                 return
             which -= 1
             ofile = files[which]
-            nfile = input(f'Copy {ofile} to: ').strip()
+            nfile = self.input(f'Copy {ofile} to: ').strip()
             if not nfile:
                 self.print("Aborted.")
                 return
@@ -205,7 +205,7 @@ class ManageFiles(Loop):
             return
         for file in files:
             self.print(f'* {file}')
-        dum = input('Remove these files? y/n ').lower()
+        dum = self.input('Remove these files? y/n ').lower()
         if not dum or dum[0] != 'y':
             self.print('Aborted.')
             return

@@ -30,9 +30,10 @@ except Exception as ex:
     pass
 
 class SQLiteCSVSync:
-    def __init__(self, db_path, table_name):
+    def __init__(self, db_path, table_name, driver):
         self.db_path = db_path
         self.table_name = table_name
+        self.driver = driver
 
     def _get_column_names(self):
         """Automatically detects table column names from metadata."""
@@ -102,7 +103,7 @@ class SQLiteCSVSync:
             else:
                 new_rows += 1
         conn.close()
-        yn = input(f'Ok to update {old_rows} and create {new_rows} todo items? y/n ').strip().lower()
+        yn = driver.input(f'Ok to update {old_rows} and create {new_rows} todo items? y/n ').strip().lower()
         if not yn or yn[0] != 'y':
             return -1
         

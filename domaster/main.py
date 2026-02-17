@@ -25,7 +25,7 @@ from domaster.keeper import Keeps
 APP_NAME  = "DoMaster"
 FILE_TYPE = ".db"
 FILE_ROOT = "domaster" + FILE_TYPE
-VERSION   = APP_NAME + " 2026.02.07"
+VERSION   = APP_NAME + " 2026.02.17"
 DATA_TYPE = ".options"
 
 class DoMaster(Loop):
@@ -168,8 +168,8 @@ class DoMaster(Loop):
     def add_task(self):
         ''' Add a task to the database. '''
         self.print("\n--- Add New Task ---")
-        proj = input("Project Name: ")
-        desc = input("Description: ")
+        proj = self.input("Project Name: ")
+        desc = self.input("Description: ")
         pri = self.get_int("Priority (Integer): ")
         next_t = self.get_int("Next Task ID (Default 0): ")
         if next_t:
@@ -278,7 +278,7 @@ class DoMaster(Loop):
             self.print("Invalid field number.")
             return
         del which
-        new_val = input(f"New value for {field}: ")
+        new_val = self.input(f"New value for {field}: ")
         if field == 'next_task':
             a_row = self.read_row_for_id(new_val)
             if a_row:
