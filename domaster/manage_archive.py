@@ -1,6 +1,6 @@
 # MISSION: Manage AUTOMATIC ARCHIVAL options.
 # STATUS: Research
-# VERSION: 0.0.2
+# VERSION: 0.0.3
 # NOTES: GLOBAL database needs to be backed-up. Even auto.
 # ManageArchived keeps the location + data for ARCHIVAL 'ops.
 # DATE: 2026-02-08 10:34:35
@@ -28,20 +28,20 @@ class ManageArchived(Loop):
     def assign_archive(self):
         ''' Set archive location. '''
         folder = Keeps.get_option('backup', default_value="unspecified")
-        print(f'Archive folder is [{folder}].')
+        self.print(f'Archive folder is [{folder}].')
         folder = input("Backup folder: ").strip()
         if not folder:
             yn = input("Clear archive option? y/n ").lower()
             if yn[0] != 'y':
-                print("Aborted.")
+                self.print("Aborted.")
                 return False
         if not os.path.exists(folder):
-            print(f"Folder [{folder}] not found.")
+            self.print(f"Folder [{folder}] not found.")
         else:
             if not Keeps.add_option('backup', folder):
-                print(f"Error. Unable to set [{folder}]")
+                self.print(f"Error. Unable to set [{folder}]")
             else:
-                print(f"Backup folder is now [{folder}]")
+                self.print(f"Backup folder is now [{folder}]")
                 return True
         return False
 
@@ -55,26 +55,26 @@ class ManageArchived(Loop):
         source = source.replace(r'\\','/')
         archive= archive.replace(r'\\','/')
         if not os.path.exists(source):
-            print(f"Error: Unable to stat [{source}].")
+            self.print(f"Error: Unable to stat [{source}].")
             return False
         if self._is_ok(archive):
             if os.path.exists(archive):
                 os.unlink(archive)
                 if os.path.exists(archive):
-                    print(f"Error: Unable to delete [{archive}].")
+                    self.print(f"Error: Unable to delete [{archive}].")
                     return False
             shutil.copyfile(source, archive)
             if not os.path.exists(archive):
-                print(f"Error: Unable to create [{archive}].")
+                self.print(f"Error: Unable to create [{archive}].")
                 return False
-            print(f"Success: Created [{archive}].")
+            self.print(f"Success: Created [{archive}].")
             return True
 
     def create_archive(self)->bool:
         ''' Create database archive. '''
         folder = Keeps.get_option('backup')
         if not folder:
-            print("Error: Please select backup location.")
+            self.print("Error: Please select backup location.")
             return False        
         archive = os.sep.join((folder, 'archive.db'))
         return self.safe_clone(self.mega.db_file, archive)
@@ -83,7 +83,7 @@ class ManageArchived(Loop):
         ''' Restore database archive. '''
         folder = Keeps.get_option('backup')
         if not folder:
-            print("Please select backup location.")
+            self.print("Please select backup location.")
             return False        
         archive = os.sep.join((folder, 'archive.db'))
         return self.safe_clone(archive, self.mega.db_file)
@@ -98,14 +98,14 @@ class ManageArchived(Loop):
             br = Keeps.add_option('auto_backup', True)
             auto = True
         if not br:
-            print("Error: Unable to toggle database auto.")
+            self.print("Error: Unable to toggle database auto.")
             return
         stat = "On" if auto else "Off"
-        print(f"Automatic database backup is now [{stat}]")
+        self.print(f"Automatic database backup is now [{stat}]")
     
     def mainloop(ops)->None:
         if not ops.mega.is_global:
-            print("Archival is for global database, only.")
+            self.print("Archival is for global database, only.")
             return
         options = {
             'Archive Folder':ops.assign_archive,
@@ -115,7 +115,7 @@ class ManageArchived(Loop):
             'Quit':ops.do_quit
             }
         folder = Keeps.get_option('backup', default_value="unspecified")
-        print(f'Archive folder is [{folder}].')
+        ops.print(f'Archive folder is [{folder}].')
         Loop.MenuOps(ops, options, "Archive Manager")
 
 

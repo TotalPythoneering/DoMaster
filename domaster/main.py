@@ -1,6 +1,6 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 3.0.1
+# VERSION: 3.0.2
 # NOTES: https://github.com/TotalPythoneering/DoMaster
 # DATE: 2026-02-10 01:30:08
 # FILE: main.py
@@ -45,23 +45,23 @@ class DoMaster(Loop):
         if Keeps.get_option('auto_backup'):
             util = ManageArchived(self)
             if util.create_archive():
-                print("Success: Backup created.")
+                self.print("Success: Backup created.")
             else:
-                print("Warning: Auto backup ignored.")
+                self.print("Warning: Auto backup ignored.")
         super().do_quit()
 
     def loop_status(self, **kwargs):
         if kwargs['errors'] > 12:
-            print('Too many errors.')
+            self.print('Too many errors.')
             self.do_quit()
             return
         self.init_db()
-        print()
+        self.print()
         zdb = 'Db is [GLOBAL]' if self.is_db_global() else 'Db is [LOCAL]'
         if self.is_same_db():
             zdb = 'Db is [SAME]'
-        print(zdb)
-        print('~'*10)
+        self.print(zdb)
+        self.print('~'*10)
 
     def is_db_global(self):
         ''' See if we're using the global database, or no. '''
@@ -98,7 +98,7 @@ class DoMaster(Loop):
             self.use_local_db()
         else:
             self.use_global_db()
-        print(f"Now using {self.short_db_name()} Datbase.")
+        self.print(f"Now using {self.short_db_name()} Datbase.")
 
     def get_fields(self, system=False)->list:
         ''' Manage the two 'flavors' of the files sets. '''
@@ -160,14 +160,14 @@ class DoMaster(Loop):
             tally = int(result.fetchone()[0])
             return tally
         except Exception as ex:
-            print(ex)
+            self.print(ex)
         finally:
             conn.close()
         return 0
 
     def add_task(self):
         ''' Add a task to the database. '''
-        print("\n--- Add New Task ---")
+        self.print("\n--- Add New Task ---")
         proj = input("Project Name: ")
         desc = input("Description: ")
         pri = self.get_int("Priority (Integer): ")
@@ -177,7 +177,7 @@ class DoMaster(Loop):
             if ref_task:
                 next_t = ref_task['uuid']
             else:
-                print(f"Task #{next_t} not found. Set to Zero.")
+                self.print(f"Task #{next_t} not found. Set to Zero.")
                 next_t = 0
         
         conn = sqlite3.connect(self.db_file)
@@ -188,7 +188,7 @@ class DoMaster(Loop):
                       desc, pri, next_t))
         conn.commit()
         conn.close()
-        print("Task added successfully.")
+        self.print("Task added successfully.")
 
     def read_row_for_uuid(self, next_t:str)->dict:
         ''' Lookup a task by uuid. None if not found. '''
@@ -221,7 +221,7 @@ class DoMaster(Loop):
     def delete_task(self)->None:
         ''' Remove a task from the database. '''
         if self.count() == 0:
-            print("Database is empty.")
+            self.print("Database is empty.")
             return 0
         self.show_task_numbers()
         tid = self.get_int("Enter ID to delete: ")
@@ -234,19 +234,19 @@ class DoMaster(Loop):
 
     def display(self, row):
         if not row:
-            print("Unable to display [{row}].")
+            self.print("Unable to display [{row}].")
             return
-        print('~'*15)
-        print(f"ID      : [{row['ID']}]", f"   Next: [{row['next_task']}]")
-        print(f"Project : [{row['project_name']}]")
-        print(f"Priority: [{row['task_priority']}]")
-        print(f"Created : [{row['date_created']}]")
-        print(f"Description: \n\t  [{row['task_description']}]")
+        self.print('~'*15)
+        self.print(f"ID      : [{row['ID']}]", f"   Next: [{row['next_task']}]")
+        self.print(f"Project : [{row['project_name']}]")
+        self.print(f"Priority: [{row['task_priority']}]")
+        self.print(f"Created : [{row['date_created']}]")
+        self.print(f"Description: \n\t  [{row['task_description']}]")
 
     def display_task_id(self, tid)->bool:
         a_row = self.read_row_for_id(tid)
         if not a_row:
-            print(f"No task @[{tid}].")
+            self.print(f"No task @[{tid}].")
             return False
         self.display(a_row)
         return True
@@ -254,7 +254,7 @@ class DoMaster(Loop):
     def update_task(self)->None:
         ''' Update a task in the database. '''
         if self.count() == 0:
-            print("Database is empty.")
+            self.print("Database is empty.")
             return 0
         self.show_task_numbers()
         tid = self.get_int("Enter ID to update: ")
@@ -264,9 +264,9 @@ class DoMaster(Loop):
         fields.remove('ID')
         if not self.display_task_id(tid):
             return
-        print("\nAvailable fields:")
+        self.print("\nAvailable fields:")
         for ss, field in enumerate(self.humanize(fields),1):            
-            print(f'{ss:02}.) {field}') 
+            self.print(f'{ss:02}.) {field}') 
         which = self.get_int("Field # to update: ")
         if not which:
             return
@@ -275,7 +275,7 @@ class DoMaster(Loop):
             which -= 1
             field = fields[which]
         except:
-            print("Invalid field number.")
+            self.print("Invalid field number.")
             return
         del which
         new_val = input(f"New value for {field}: ")
@@ -285,7 +285,7 @@ class DoMaster(Loop):
                 new_val = a_row['uuid']
             else:
                 new_val = 0
-                print(f"Task #{new_val} not found. Set to Zero.")
+                self.print(f"Task #{new_val} not found. Set to Zero.")
                 
         conn = sqlite3.connect(self.db_file)
         conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
@@ -297,11 +297,11 @@ class DoMaster(Loop):
         self.show_task_numbers()
         tid = self.get_int("Enter Task ID to mark as done: ")
         if not tid:
-            print("Aborted.")
+            self.print("Aborted.")
             return
         row = self.read_row_for_id(tid)
         if not row:
-            print(f"Task #{tid} not found.")
+            self.print(f"Task #{tid} not found.")
             return
         else:
             tid = row['uuid']            
@@ -326,9 +326,9 @@ class DoMaster(Loop):
         ''' Display the ID's of all tasks. '''
         for ss, id_num in enumerate(self.get_task_numbers()):
             if ss % wide == 0:
-                print()
-            print(f'#[{id_num:03}] ', end = '')
-        print()
+                self.print()
+            self.print(f'#[{id_num:03}] ', end = '')
+        self.print()
 
     def get_list_query(self, filter_type):
         query = f"SELECT * FROM todo"
@@ -341,7 +341,7 @@ class DoMaster(Loop):
 
     def list_tasks(self,filter_type="all")->int:
         ''' Returns the number of tasks shown. '''
-        print(self.short_db_name())
+        self.print(self.short_db_name())
         fields = self.get_fields()
         query = self.get_list_query(filter_type)
         conn = sqlite3.connect(self.db_file)
@@ -357,7 +357,7 @@ class DoMaster(Loop):
             count += 1
             self.display(r)
         conn.close()
-        print(f"View [{filter_type.upper()}] is {count:03} of {self.count():03} items.")
+        self.print(f"View [{filter_type.upper()}] is {count:03} of {self.count():03} items.")
         return count
     
     def list_pending(self):
@@ -370,7 +370,7 @@ class DoMaster(Loop):
         if total and total == self.count():
             message = "All DONE: You're a DoMaster!"
             stars = '*' * len(message)
-            print(stars, message, stars, sep='\n')
+            self.print(stars, message, stars, sep='\n')
 
     def list_all(self):
         ''' List all tasks. '''
@@ -380,7 +380,7 @@ class DoMaster(Loop):
         ''' Show all project names. '''
         conn = sqlite3.connect(self.db_file)
         projs = conn.execute("SELECT DISTINCT project_name FROM todo ORDER BY project_name").fetchall()
-        for p in projs: print(f"- {p[0]}")
+        for p in projs: self.print(f"- {p[0]}")
         conn.close()
 
     def manage_files(self)->None:

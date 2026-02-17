@@ -1,6 +1,6 @@
 # MISSION: Maintain a set of global parameters witin any user's home-directory.
 # STATUS: Research
-# VERSION: 1.0.0
+# VERSION: 1.0.1
 # NOTES: Testing Success - See the project for full documentation.
 # DATE: 2026-02-07 09:07:21
 # FILE: keeper.py

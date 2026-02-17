@@ -1,6 +1,6 @@
 # MISSION: Manage a to-do list or / and ideas.
 # STATUS: Production
-# VERSION: 1.1.1
+# VERSION: 1.1.2
 # NOTES: Tested. See the project for full documentation.
 # DATE: 2026-01-27 08:38:38
 # FILE: sync_tool.py
@@ -104,9 +104,7 @@ class SQLiteCSVSync:
         conn.close()
         yn = input(f'Ok to update {old_rows} and create {new_rows} todo items? y/n ').strip().lower()
         if not yn or yn[0] != 'y':
-            print('Aborted.')
             return -1
-        print("Updating database ...")
         
         # Dynamic UPSERT query construction
         placeholders = ", ".join(["?"] * len(columns))

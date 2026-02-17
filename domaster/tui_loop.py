@@ -1,6 +1,6 @@
 # MISSION: Provide a reusable menu / sub-menu framework.
 # STATUS: Research
-# VERSION: 0.1.0
+# VERSION: 0.1.1
 # NOTES: Support quitable TUI 'ops. Features:
 #       💡 Event: loop_status(...)
 #           ✓ Operational state before each loop.
@@ -19,6 +19,10 @@ class Loop:
     def __init__(self):
         ''' Prep menu instance for looping. '''
         self.b_done = False
+
+    def print(self, *args, **kwargs):
+        ''' Encapsulation for replacement. '''
+        print(*args, **kwargs)
 
     def loop_status(self, **kwargs):
         ''' Operational state before each loop.
@@ -54,7 +58,7 @@ class Loop:
             print('Error: Please inherit from Loop.')
             return False
         line = '*' * len(title)
-        print(title, line, sep='\n')
+        ops.print(title, line, sep='\n')
         keys = list(options.keys())
         times=0;errors=0;selection=None;entry=None
         while ops.is_done() == False:
@@ -62,7 +66,7 @@ class Loop:
                             selection=selection, entry=entry)
             for ss, op in enumerate(keys, 1):
                 tag = f'{op}:'
-                print(f'{ss:02}.) {tag:<18}{options[op].__doc__}')
+                ops.print(f'{ss:02}.) {tag:<18}{options[op].__doc__}')
             try:
                 entry = selection = input("Enter #: ")
                 which = int(selection.strip())
@@ -71,15 +75,15 @@ class Loop:
                     times = 0
                     selection = keys[which-1]
                     if selection in options: # double check
-                        print('*'*which, selection)
+                        ops.print('*'*which, selection)
                         errors = 0           # RESET
                         options[selection]()
                 else:
-                    print(f"Invalid number {which}.")
+                    ops.print(f"Invalid number {which}.")
             except ValueError:
-                print("Numbers only, please.")
+                ops.print("Numbers only, please.")
                 continue
             except Exception as ex:
-                print(ex)
+                ops.print(ex)
                 continue
         return True
