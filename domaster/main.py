@@ -1,8 +1,7 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 3.0.2
+# VERSION: 3.1.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-02-10 01:30:08
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -336,7 +335,7 @@ class DoMaster(Loop):
             query += " WHERE date_done IS NULL OR date_done = ''"
         elif filter_type == "done":
             query += " WHERE date_done IS NOT NULL AND date_done != ''"        
-        query += " ORDER BY project_name ASC, task_priority ASC"
+        query += " ORDER BY project_name ASC, task_priority, date_created"
         return query
 
     def list_tasks(self,filter_type="all")->int:
