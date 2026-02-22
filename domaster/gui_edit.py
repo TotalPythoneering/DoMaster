@@ -18,7 +18,7 @@ class Edit(simpledialog.Dialog):
     def __init__(self, parent, title, prompt, dtype=str):
         self.prompt = prompt
         self.dtype = dtype
-        self.font = ("Arial", 18)
+        self.font = ("Courier", 18)
         super().__init__(parent, title)
 
     def body(self, master):       

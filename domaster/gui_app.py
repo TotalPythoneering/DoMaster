@@ -112,17 +112,21 @@ class GuiApp(tk.Tk):
     def get_int(self, prompt, default=0)->int:
         ''' Prompt to return an integral input, else the default value. '''
         from gui_edit import Edit
-        result = Edit(self, 'DoMaster', prompt, int).result
+        dlg = Edit(self, 'DoMaster', prompt, int)
+        result = dlg.result
         if not result:
             result = default
+        dlg.destroy()
         return result
 
     def get_input(self, prompt, default='')->str:
         ''' Prompt to return an integral input, else the default value. '''
         from gui_edit import Edit
-        result = Edit(self, 'DoMaster', prompt, str).result
+        dlg = Edit(self, 'DoMaster', prompt, str)
+        result = dlg.result
         if not result:
             result = default
+        dlg.destroy()
         return result
     
     def input(self, *args, **kwargs):

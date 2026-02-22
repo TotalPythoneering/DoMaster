@@ -83,6 +83,31 @@ from abc import ABC, abstractmethod
 class MenuDriver(MenuLoop, ABC):
 
     @abstractmethod
+    def set_color(fore, back)->tuple:
+        pass
+
+    @abstractmethod
+    def input(*args, **kwargs):
+        pass
+
+    @abstractmethod
+    def print(*args, **kwargs):
+        pass
+
+    @abstractmethod
+    def loop_status(**kwargs):
+        pass
+
+    @abstractmethod
+    def get_int(prompt, default=0)->int:
+        pass
+
+    @abstractmethod
     def do_quit(self):
         self._b_done = True
+
+    @abstractmethod
+    def menu_ops(ops, options, title)->bool:
+        pass
+
 
