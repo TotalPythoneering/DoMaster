@@ -3,7 +3,7 @@
 # VERSION: 1.2.2
 # NOTES: Official U.I in-our-face. :^)
 # DATE: 2026-01-27 09:23:15
-# FILE: __ain__py
+# FILE: __main__.py
 # AUTHOR: Randall Nagy
 #
 from . main import mainloop

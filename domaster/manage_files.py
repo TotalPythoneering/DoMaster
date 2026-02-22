@@ -225,7 +225,7 @@ class ManageFiles(MenuLoop):
             'Reset Database':self.backup_and_empty,
             'Copy Data':self.copy_data,
             'Cleanup':self.remove_temp_files,
-            'Quit':API.do_quit
+            'Quit':self.do_quit
             }
         API.menu_ops(self, options, "File Manager")
 

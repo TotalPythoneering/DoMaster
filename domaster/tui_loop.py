@@ -6,7 +6,6 @@
 # FILE: tui_loop.py
 # AUTHOR: Randall Nagy
 #
-
 from ui_loop import *
 
 class TuiLoop(MenuLoop):
@@ -14,6 +13,10 @@ class TuiLoop(MenuLoop):
     def __init__(self):
         ''' Prep menu instance for looping. '''
         super().__init__()
+        self.ops = None
+        self.options = None
+        self.title = None
+        self.ops_stack = []
 
     def set_color(self, fore, back)->tuple:
         pass
@@ -44,9 +47,15 @@ class TuiLoop(MenuLoop):
             pass
         return result
 
-    def is_done(self):
-        ''' See if we're ready to exit. '''
-        return self.b_done
+    def do_quit(self):
+        if not self.ops_stack:
+            super().do_quit()
+        else:
+            frame = self.ops_stack.pop()
+            self.ops = frame[0]
+            self.options = frame[1]
+            self.title = frame[2]
+            self.show_menu()
 
     def do_app_exit(self):
         ''' Exit. '''
@@ -54,34 +63,41 @@ class TuiLoop(MenuLoop):
         self.b_done = True
 
     def menu_ops(self, ops, options, title)->bool:
-        ''' Re-usable API.is_done event with per-loop status reporting. '''
-        line = '*' * len(title)
-        API.do_print(title, line, sep='\n')
-        keys = list(options.keys())
+        ''' Re-usable self.is_done event with per-loop status reporting. '''
+        ops.is_done = False # Safe coding means no accident ;-)
+        self.ops = ops; self.options = options; self.title = title
+        self.ops_stack.append([ops, options, title])
+        self.show_menu()
+
+    def show_menu(self):
+        ''' Support reveal and redraw requirements '''
+        line = '*' * len(self.title)
+        self.print(self.title, line, sep='\n')
+        keys = list(self.options.keys())
         times=0;errors=0;selection=None;entry=None
-        while API.is_done() == False:
-            API.loop_status(times=times, errors=errors,
+        while self.ops.b_done == False:
+            self.loop_status(times=times, errors=errors,
                         selection=selection, entry=entry)
             for ss, op in enumerate(keys, 1):
                 tag = f'{op}:'
-                API.do_print(f'{ss:02}.) {tag:<18}{options[op].__doc__}')
+                self.print(f'{ss:02}.) {tag:<18}{self.options[op].__doc__}')
             try:
-                entry = selection = API.get_input("Enter #: ")
+                entry = selection = self.input("Enter #: ")
                 which = int(selection.strip())
                 times += 1; errors += 1
                 if which > 0 and which <= len(keys):
                     times = 0
                     selection = keys[which-1]
-                    if selection in options: # double check
-                        API.do_print('*'*which, selection)
+                    if selection in self.options: # double check
+                        self.print('*'*which, selection)
                         errors = 0           # RESET
-                        options[selection]()
+                        self.options[selection]()
                 else:
-                    API.do_print(f"Invalid number {which}.")
+                    self.print(f"Invalid number {which}.")
             except ValueError:
-                API.do_print("Numbers only, please.")
+                self.print("Numbers only, please.")
                 continue
             except Exception as ex:
-                API.do_print(ex)
+                self.print(ex)
                 continue
         return True

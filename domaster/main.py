@@ -411,7 +411,7 @@ def mainloop():
         'Projects':ops.project_report,
         'Swap Db':ops.swap_db,
         'File Manager':ops.manage_files,
-        'Quit':ops.do_app_exit
+        'Quit':ops.do_quit,
         }
     if API.set_gui(ops, options, VERSION):
         print("Going GUI...")
