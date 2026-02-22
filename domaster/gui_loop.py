@@ -10,7 +10,7 @@ from ui_loop import *
 from gui_colors import COLORS
 from gui_app import GuiApp
 
-class GuiLoop(MenuLoop):
+class GuiLoop(MenuDriver):
     ''' Base class for all GUI looping menu 'ops '''
     def __init__(self, ops, options, VERSION):
         ''' Prep menu instance for looping. '''

@@ -112,7 +112,7 @@ class ManageArchived(MenuLoop):
             'Create Archive':self.create_archive,
             'Restore Archive':self.restore_archive,
             'Auto Archive':self.auto_archive,
-            'Quit':self.do_quit
+            'Quit':API.do_quit
             }
         folder = Keeps.get_option('backup', default_value="unspecified")
         API.do_print(f'Archive folder is [{folder}].')

@@ -18,7 +18,7 @@ class GuiApp(tk.Tk):
         super().__init__()
 
         # menu loop information:
-        self.is_done    = False
+        self.is_app_done    = False
         self.ops_stack  = []
         self.ops        = ops
         self.options    = options
@@ -164,7 +164,7 @@ class GuiApp(tk.Tk):
     def pop_ops(self): 
         if not self.ops_stack:
             # We're done!
-            self.is_done = True
+            self.is_app_done = True
             self.destroy()
         else:
             self.print(f"popped {self.ops.__class__}")
@@ -185,7 +185,7 @@ class GuiApp(tk.Tk):
         return True
     
     def show_menu(self):
-        if self.is_done:
+        if self.is_app_done:
             return
         line = '*' * len(self.menu_title)
         self.print(self.menu_title, line, sep='\n')

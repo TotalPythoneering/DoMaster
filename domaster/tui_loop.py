@@ -8,7 +8,7 @@
 #
 from ui_loop import *
 
-class TuiLoop(MenuLoop):
+class TuiLoop(MenuDriver):
     ''' Base class for all looping menu 'ops '''
     def __init__(self):
         ''' Prep menu instance for looping. '''
@@ -57,16 +57,11 @@ class TuiLoop(MenuLoop):
             self.title = frame[2]
             self.show_menu()
 
-    def do_app_exit(self):
-        ''' Exit. '''
-        # Exit management event. Plausable `destructor.`
-        self.b_done = True
-
     def menu_ops(self, ops, options, title)->bool:
-        ''' Re-usable self.is_done event with per-loop status reporting. '''
-        ops.is_done = False # Safe coding means no accident ;-)
+        ''' Stackable menu logic. '''
+        if self.ops:
+            self.ops_stack.append([self.ops, self.options, self.title])
         self.ops = ops; self.options = options; self.title = title
-        self.ops_stack.append([ops, options, title])
         self.show_menu()
 
     def show_menu(self):
@@ -75,7 +70,7 @@ class TuiLoop(MenuLoop):
         self.print(self.title, line, sep='\n')
         keys = list(self.options.keys())
         times=0;errors=0;selection=None;entry=None
-        while self.ops.b_done == False:
+        while self.is_done() == False:
             self.loop_status(times=times, errors=errors,
                         selection=selection, entry=entry)
             for ss, op in enumerate(keys, 1):

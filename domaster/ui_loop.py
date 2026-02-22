@@ -24,7 +24,7 @@ class API:
         from tui_loop import TuiLoop
         from gui_loop import GuiLoop
         try:
-            int('boom')
+            # int('boom')
             API.ui_driver = GuiLoop(ops, options, VERSION)
             API.is_gui = True
             return True
@@ -55,7 +55,7 @@ class API:
 
     @staticmethod
     def is_done():
-        return API.ui_driver.b_done
+        return API.ui_driver.is_done()
 
     @staticmethod
     def do_quit():
@@ -66,13 +66,23 @@ class API:
     def menu_ops(ops, options, title)->bool:
         return API.ui_driver.menu_ops(ops, options, title)
 
+
 class MenuLoop:
     ''' Support common API.menu_ops(above) ''' 
     def __init__(self):
-        self.b_done = False
+        self._b_done = False
 
+    def is_done(self):
+        return self._b_done
+
+    def reset(self):
+        self._b_done = False
+
+
+from abc import ABC, abstractmethod
+class MenuDriver(MenuLoop, ABC):
+
+    @abstractmethod
     def do_quit(self):
-        ''' Exit '''
-        self.b_done = True
+        self._b_done = True
 
-    
