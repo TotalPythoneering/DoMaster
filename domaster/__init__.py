@@ -3,7 +3,7 @@
 # VERSION: 1.2.2
 # NOTES: Minimalist
 # DATE: 2026-01-17 09:21:47
-# FILE: __init__.py
+# FILE: __init__py
 # AUTHOR: Randall Nagy
 #
 

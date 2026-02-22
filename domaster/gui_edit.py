@@ -1,6 +1,6 @@
 # MISSION: Create a reusable GUITUI Framework.
 # STATUS: Research
-# VERSION: 0.0.0
+# VERSION: 0.0.1
 # NOTES: GUI default.
 # DATE: 2026-02-21 02:30:19
 # FILE: gui_edit.py
@@ -18,18 +18,18 @@ class Edit(simpledialog.Dialog):
     def __init__(self, parent, title, prompt, dtype=str):
         self.prompt = prompt
         self.dtype = dtype
-        self.FONT_STYLE = ("Arial", 18)
+        self.font = ("Arial", 18)
         super().__init__(parent, title)
 
     def body(self, master):       
         # Styled Label
         tk.Label(master, text=self.prompt,
-                 font=self.FONT_STYLE).grid(row=0, padx=20, pady=20)
+                 font=self.font).grid(row=0, padx=20, pady=20)
         
         # Styled Edit Box (Entry)
         # bg: box background | fg: typed text color | insertbackground: cursor color
         self.entry = tk.Entry(master, 
-                              font=self.FONT_STYLE, 
+                              font=self.font, 
                               relief="flat",
                               highlightthickness=2)
         
@@ -41,7 +41,7 @@ class Edit(simpledialog.Dialog):
 
     def buttonbox(self):
         box = tk.Frame(self)        
-        btn_opts = {"font": self.FONT_STYLE, "width": 10}
+        btn_opts = {"font": self.font, "width": 10}
         
         tk.Button(box, text="OK", command=self.ok, **btn_opts).pack(side=tk.LEFT, padx=10, pady=10)
         tk.Button(box, text="Cancel", command=self.cancel, **btn_opts).pack(side=tk.LEFT, padx=10, pady=10)
@@ -69,7 +69,7 @@ class Edit(simpledialog.Dialog):
 if __name__ == '__main__':
     root = tk.Tk()
     root.withdraw()
-    # Editing demonstrtions:
+    # Editing demonstrations:
     text_val = Edit(root, "Text", "Enter Name:", dtype=str).result
     int_val = Edit(root, "Integer", "Enter Age:", dtype=int).result
     float_val = Edit(root, "Float", "Enter Price:", dtype=float).result

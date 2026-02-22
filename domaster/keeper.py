@@ -19,7 +19,7 @@ Pure API class to manage object /
 dictionary stowage within any user's
 home directory. Options can either
 be managed by tag, tag-value pair,
-dictionary, any object's __dict__
+dictionary, any object's __ict__
 set, or any combination of the same.
 '''
 

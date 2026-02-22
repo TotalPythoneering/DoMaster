@@ -1,6 +1,11 @@
 # MISSION: Provide a reusable menu / sub-menu framework.
-# STATUS: Research
-# VERSION: 0.0.0
+# STATUS: Production
+# VERSION: 1.0.0
+# NOTES: The standard's color names that we can use on the Tkinter.
+# DATE: 2026-02-17 06:34:13
+# FILE: gui_colors.py
+# AUTHOR: Randall Nagy
+#
 
 COLORS = {
 "adobe":"#bd6c48",

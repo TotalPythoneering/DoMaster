@@ -33,7 +33,7 @@ def get_calendar(month=None, year=None)->list:
     except:
         return ['Bad number format(s)']
 
-if __name__ == "__main__":
+if __ame__== "__ain__:
     for line in get_calendar(12,10000):
         print(line)
     print()

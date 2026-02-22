@@ -1,8 +1,8 @@
 # MISSION: Manage HTML reports, backups, and exported data files.
 # STATUS: Production
-# VERSION: 1.2.0
+# VERSION: 2.0.0
 # NOTES: Works well.
-# DATE: 2026-02-10 01:16:49
+# DATE: 2026-02-21 10:37:12
 # FILE: manage_files.py
 # AUTHOR: Randall Nagy
 #
@@ -14,11 +14,11 @@ import datetime
 
 if '..' not in sys.path:
     sys.path.insert(0,'..')
-from domaster.tui_loop import Loop
+from ui_loop import API, MenuLoop
 from domaster.sync_tool import SQLiteCSVSync
 from domaster.keeper import Keeps
 
-class ManageFiles(Loop):
+class ManageFiles(MenuLoop):
 
     def __init__(self, db):
         super().__init__()
@@ -34,7 +34,7 @@ class ManageFiles(Loop):
         # TODO: Add CSS (et al.)
         ''' Generate the HTML report into file. Returns number exported. '''
         if self.db.count() == 0:
-            self.print("Database is empty.")
+            API.do_print("Database is empty.")
             return 0
         conn = sqlite3.connect(self.db.db_file)
         conn.row_factory = sqlite3.Row
@@ -64,7 +64,7 @@ class ManageFiles(Loop):
                             value = post['ID']
                     htag = self.db.humanize(tag)
                     f.write(f"<b>{htag}:</b>&nbsp;&nbsp;{value}<br>")
-        self.print(f"Report exported to {filename}")
+        API.do_print(f"Report exported to {filename}")
         conn.close()
         return count
 
@@ -77,19 +77,19 @@ class ManageFiles(Loop):
     def html_report(self):
         ''' Create the HTML Report. '''
         if self.db.count() == 0:
-            self.print("Database is empty.")
+            API.do_print("Database is empty.")
             return
         total_pending = self.export_html("pending")
         total_done    = self.export_html("done")
         if total_pending == total_done == 0:
-            self.print("No items exported.")
+            API.do_print("No items exported.")
         else:
-            self.print(f'Pending: {total_pending:03}, Done: {total_done:03}')
+            API.do_print(f'Pending: {total_pending:03}, Done: {total_done:03}')
 
     def export_csv(self, dated=False, folder=None)->bool:
         ''' Export to CSV file. '''
         if self.db.count() == 0:
-            self.print("Database is empty.")
+            API.do_print("Database is empty.")
             return False
         mgr = SQLiteCSVSync(self.db.db_file, 'todo', self)
         zfile = 'domaster.csv'
@@ -97,25 +97,25 @@ class ManageFiles(Loop):
         if os.path.exists(zfile):
             ztmp = '~' + safe + '_' + zfile
             shutil.copyfile(zfile, ztmp)
-            self.print(f'Saved older {zfile} as {ztmp}.')
+            API.do_print(f'Saved older {zfile} as {ztmp}.')
         if dated:
             zfile =  f'~domaster_backup_{safe}.csv'
         if folder:
             # DEFER TO USER-SPECIFIED ARCHIVE PATH
             if not os.path.exists(folder):
-                self.print(f"Folder [{folder}] not found.")
+                API.do_print(f"Folder [{folder}] not found.")
                 return False
             zfile = os.sep.join((folder, zfile))
         num = mgr.export_to_csv(zfile)
         if num == -1:
-            self.print('Aborted.')
+            API.do_print('Aborted.')
             return False # error abort
         br = True
         if not num:
-            self.print(f"Error: Unable to export {zfile} file.")
+            API.do_print(f"Error: Unable to export {zfile} file.")
             br = False
         else:
-            self.print(f"Success: Exported {zfile}.")
+            API.do_print(f"Success: Exported {zfile}.")
         return br
 
     def import_csv(self, file_name=None)->bool:
@@ -126,23 +126,23 @@ class ManageFiles(Loop):
             zfile = file_name
         br = mgr.import_from_csv(zfile)
         if not br:
-            self.print(f"Error: Unable to import {zfile} file.")
+            API.do_print(f"Error: Unable to import {zfile} file.")
         else:
-            self.print(f"Success: Imported {zfile}.")
+            API.do_print(f"Success: Imported {zfile}.")
         return br
 
     def backup_and_empty(self)->None:
         ''' Export & reset TODO list. '''
         if self.db.count() == 0:
-            self.print("Database is empty.")
+            API.do_print("Database is empty.")
             return
-        cando = self.input("Okay to blank the database? ").strip().lower()
+        cando = API.get_input("Okay to blank the database? ").strip().lower()
         if not cando or cando[0] != 'y':
-            self.print("Aborted.")
+            API.do_print("Aborted.")
             return
         folder = Keeps.get_option("backup", default_value=None)
         if folder:
-            yn = self.input(f"Export to [{folder}]? y/n ").strip().lower()
+            yn = API.get_input(f"Export to [{folder}]? y/n ").strip().lower()
             if yn and yn[0] != 'y':
                 folder = None
         if not self.export_csv(True, folder=folder):
@@ -151,9 +151,9 @@ class ManageFiles(Loop):
         try:
             conn.execute("DELETE FROM todo WHERE ID IS NOT 0;")
             conn.commit()
-            self.print("Success: All tasks removed.")
+            API.do_print("Success: All tasks removed.")
         except Exception as ex:
-            self.print(f"Error: Unable to reset {self.db.db_file}.")
+            API.do_print(f"Error: Unable to reset {self.db.db_file}.")
         finally:
             conn.close()
 
@@ -170,67 +170,68 @@ class ManageFiles(Loop):
         ''' Copy exported artifacts. '''
         files = self.get_artis()
         if not files:
-            self.print('No files.')
+            API.do_print('No files.')
             return
         for ss, file in enumerate(files, 1):
-            self.print(f'{ss}.) {file}')
+            API.do_print(f'{ss}.) {file}')
         try:
-            which = self.get_int('Copy #: ')
+            which = API.get_int('Copy #: ')
             if not which:
-                self.print("Aborted.")
+                API.do_print("Aborted.")
                 return
             which -= 1
             ofile = files[which]
-            nfile = self.input(f'Copy {ofile} to: ').strip()
+            nfile = API.get_input(f'Copy {ofile} to: ').strip()
             if not nfile:
-                self.print("Aborted.")
+                API.do_print("Aborted.")
                 return
             if os.path.exists(nfile):
-                self.print(f'File {nfile} already exists.')
-                self.print('Please use another file name.')
+                API.do_print(f'File {nfile} already exists.')
+                API.do_print('Please use another file name.')
             else:
                 shutil.copyfile(ofile, nfile)
                 if os.path.exists(nfile):
-                    self.print(f'Copied {ofile} to {nfile}.')
+                    API.do_print(f'Copied {ofile} to {nfile}.')
                 else:
-                    self.print(f'Error: Unable to create {nfile}.')
+                    API.do_print(f'Error: Unable to create {nfile}.')
         except:
-            self.print(f"Invalid entry.")
+            API.do_print(f"Invalid entry.")
 
     def remove_temp_files(self)->None:
         ''' Remove exported artifacts. '''
         files = self.get_artis()
         if not files:
-            self.print('No temporary files to remove.')
+            API.do_print('No temporary files to remove.')
             return
         for file in files:
-            self.print(f'* {file}')
-        dum = self.input('Remove these files? y/n ').lower()
+            API.do_print(f'* {file}')
+        dum = API.get_input('Remove these files? y/n ').lower()
         if not dum or dum[0] != 'y':
-            self.print('Aborted.')
+            API.do_print('Aborted.')
             return
         for file in files:
             os.unlink(file)
             if os.path.exists(file):
-                self.print(f"Warning: Unable to remove {file}.")
+                API.do_print(f"Warning: Unable to remove {file}.")
             else:
-                self.print(f"Removed {file}.")
+                API.do_print(f"Removed {file}.")
                     
-    def mainloop(ops)->None:
+    def mainloop(self)->None:
         options = {
-            'HTML Report':ops.html_report,
-            'Archive':ops.archive_options,
-            'Export Data':ops.export_csv,
-            'Import Data':ops.import_csv,
-            'Reset Database':ops.backup_and_empty,
-            'Copy Data':ops.copy_data,
-            'Cleanup':ops.remove_temp_files,
-            'Quit':ops.do_quit
+            'HTML Report':self.html_report,
+            'Archive':self.archive_options,
+            'Export Data':self.export_csv,
+            'Import Data':self.import_csv,
+            'Reset Database':self.backup_and_empty,
+            'Copy Data':self.copy_data,
+            'Cleanup':self.remove_temp_files,
+            'Quit':API.do_quit
             }
-        Loop.MenuOps(ops, options, "File Manager")
+        API.menu_ops(self, options, "File Manager")
 
 
 if __name__ == '__main__':
+    API.init()
     from domaster.main import DoMaster
     sut = ManageFiles(DoMaster())
     sut.mainloop()

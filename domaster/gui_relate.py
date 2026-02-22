@@ -93,7 +93,7 @@ class TaskLinker:
                     self.refresh_ui()
                     break
 
-if __name__ == "__main__":
+if __ame__== "__ain__:
     root = tk.Tk()
     app = TaskLinker(root)
     root.mainloop()
