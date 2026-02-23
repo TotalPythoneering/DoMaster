@@ -18,6 +18,19 @@ Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j
 
 The idea is to use the Tkinter ***G.U.I*** whenever possible, yet preserve the ***T.U.I*** expereince.
 
+To review the GuiTui concept:
+
+✔️ Download & unzip the code.
+
+✔️ Change to the parent directory of the ***domaster** folder.
+
+✔️ python -m domaster
+
+~ or ~
+
+✔️ python3 -m domaster
+
+
 ## 🌟 Features
 
 - **Local Persistence**: Powered by an SQLite3 backend for rapid data access and reliability.
@@ -73,6 +86,7 @@ Happy 'Spire-ring!
 🫡 
 
 (*) and yes, with care we might even *export* from one `Db` to *import* into the other.
+
 
 
 
