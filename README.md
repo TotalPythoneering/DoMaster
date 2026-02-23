@@ -22,7 +22,7 @@ To review the GuiTui concept:
 
 ✔️ Download & unzip the code.
 
-✔️ Change to the parent directory of the ***domaster** folder.
+✔️ Change to the parent directory of the **domaster** folder.
 
 ✔️ python -m domaster
 
@@ -86,6 +86,7 @@ Happy 'Spire-ring!
 🫡 
 
 (*) and yes, with care we might even *export* from one `Db` to *import* into the other.
+
 
 
 
