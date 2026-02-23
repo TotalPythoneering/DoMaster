@@ -13,6 +13,11 @@ Here is a [primer video](https://youtu.be/Xg3zdm0wZ7I).
 
 Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j7lk9PRjyE).
 
+## 🌟 Works in Process
+👉 Presently testing the "GuiTui" concept.
+
+The idea is to use the Tkinter ***G.U.I*** whenever possible, yet preserve the ***T.U.I*** expereince.
+
 ## 🌟 Features
 
 - **Local Persistence**: Powered by an SQLite3 backend for rapid data access and reliability.
@@ -68,6 +73,7 @@ Happy 'Spire-ring!
 🫡 
 
 (*) and yes, with care we might even *export* from one `Db` to *import* into the other.
+
 
 
 
