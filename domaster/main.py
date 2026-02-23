@@ -18,7 +18,7 @@ if '..' not in sys.path:
 
 from domaster.manage_files import ManageFiles
 from domaster.manage_archive import ManageArchived
-from ui_loop import API, MenuLoop
+from domaster.ui_loop import API, MenuLoop
 
 from domaster.keeper import Keeps
 
@@ -168,20 +168,10 @@ class DoMaster(MenuLoop):
     def add_task(self):
         ''' Add a task to the database. '''
         API.do_print("\n--- Add New Task ---")
-        if API.is_gui:
-            import tkinter
-            root = tkinter.Tk()
-            root.withdraw()
-            from gui_edit import Edit
-            proj = Edit(root, 'DoMaster',"Project Name: ").result
-            desc = Edit(root, 'DoMaster',"Description: ").result
-            pri  = Edit(root, 'DoMaster',"Priority: ", int).result
-            next_t  = Edit(root, 'DoMaster',"Next Task ID: ", int).result
-        else:
-            proj   = API.get_input("Project Name: ")
-            desc   = API.get_input("Description: ")
-            pri    = API.get_int("Priority (Integer): ")
-            next_t = API.get_int("Next Task ID (Default 0): ")
+        proj   = API.get_input("Project Name: ")
+        desc   = API.get_input("Description: ")
+        pri    = API.get_int("Priority (Integer): ")
+        next_t = API.get_int("Next Task ID (Default 0): ")
         if next_t:
             ref_task = self.read_row_for_id(next_t)
             if ref_task:

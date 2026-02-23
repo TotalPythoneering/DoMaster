@@ -6,9 +6,12 @@
 # FILE: gui_loop.py
 # AUTHOR: Randall Nagy
 #
-from ui_loop import *
-from gui_colors import COLORS
-from gui_app import GuiApp
+import sys
+if '..' not in sys.path:
+    sys.path.insert(0, '..')
+from domaster.ui_loop import *
+from domaster.gui_colors import COLORS
+from domaster.gui_app import GuiApp
 
 class GuiLoop(MenuDriver):
     ''' Base class for all GUI looping menu 'ops '''

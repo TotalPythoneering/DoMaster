@@ -15,7 +15,7 @@ import datetime
 
 if '..' not in sys.path:
     sys.path.insert(0, '..')
-from ui_loop import API, MenuLoop
+from domaster.ui_loop import API, MenuLoop
 from domaster.sync_tool import SQLiteCSVSync
 from domaster.keeper import Keeps
 

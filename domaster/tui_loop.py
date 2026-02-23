@@ -6,7 +6,11 @@
 # FILE: tui_loop.py
 # AUTHOR: Randall Nagy
 #
-from ui_loop import *
+import sys
+if '..' not in sys.path:
+    sys.path.insert(0, '..')
+    
+from domaster.ui_loop import *
 
 class TuiLoop(MenuDriver):
     ''' Base class for all looping menu 'ops '''

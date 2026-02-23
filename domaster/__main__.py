@@ -7,7 +7,5 @@
 # AUTHOR: Randall Nagy
 #
 from . main import mainloop
-from . upsert import UpsertSqlite
-from . sync_tool import SQLiteCSVSync
 
 mainloop()

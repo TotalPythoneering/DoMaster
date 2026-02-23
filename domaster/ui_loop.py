@@ -6,6 +6,10 @@
 # FILE: ui_loop.py
 # AUTHOR: Randall Nagy
 #
+import sys
+if '..' not in sys.path:
+    sys.path.insert(0, '..')
+
 class API:
     ui_driver = None
     is_gui = False
@@ -21,8 +25,8 @@ class API:
     @staticmethod
     def set_gui(ops, options, VERSION):
         ''' Try to set up the GUI - False if using TUI '''
-        from tui_loop import TuiLoop
-        from gui_loop import GuiLoop
+        from domaster.tui_loop import TuiLoop
+        from domaster.gui_loop import GuiLoop
         try:
             # int('boom')
             API.ui_driver = GuiLoop(ops, options, VERSION)

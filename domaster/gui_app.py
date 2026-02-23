@@ -8,7 +8,10 @@
 #
 import sys
 import tkinter as tk
-from ui_loop import API
+
+if '..' not in sys.path:
+    sys.path.insert(0, '..')
+from domaster.ui_loop import API
 
 class GuiApp(tk.Tk):
     """
@@ -111,7 +114,7 @@ class GuiApp(tk.Tk):
 
     def get_int(self, prompt, default=0)->int:
         ''' Prompt to return an integral input, else the default value. '''
-        from gui_edit import Edit
+        from domaster.gui_edit import Edit
         dlg = Edit(self, 'DoMaster', prompt, int)
         result = dlg.result
         if not result:
@@ -121,7 +124,7 @@ class GuiApp(tk.Tk):
 
     def get_input(self, prompt, default='')->str:
         ''' Prompt to return an integral input, else the default value. '''
-        from gui_edit import Edit
+        from domaster.gui_edit import Edit
         dlg = Edit(self, 'DoMaster', prompt, str)
         result = dlg.result
         if not result:
