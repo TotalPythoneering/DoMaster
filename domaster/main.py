@@ -237,11 +237,12 @@ class DoMaster(MenuLoop):
             API.do_print("Unable to display [{row}].")
             return
         API.do_print('~'*15)
-        API.do_print(f"ID      : [{row['ID']}]", f"   Next: [{row['next_task']}]")
-        API.do_print(f"Project : [{row['project_name']}]")
-        API.do_print(f"Priority: [{row['task_priority']}]")
-        API.do_print(f"Created : [{row['date_created']}]")
-        API.do_print(f"Description: \n\t  [{row['task_description']}]")
+        API.do_print(f"ID      : [{API.CALT}{row['ID']}{API.CALT}]")
+        API.do_print(f"Next    : [{API.CALT}{row['next_task']}{API.CALT}]")
+        API.do_print(f"Project : [{API.CALT}{row['project_name']}{API.CALT}]")
+        API.do_print(f"Priority: [{API.CALT}{row['task_priority']}{API.CALT}]")
+        API.do_print(f"Created : [{API.CALT}{row['date_created']}{API.CALT}]")
+        API.do_print(f"Description: \n\t  [{API.CALT}{row['task_description']}{API.CALT}]")
 
     def display_task_id(self, tid)->bool:
         a_row = self.read_row_for_id(tid)
@@ -368,7 +369,7 @@ class DoMaster(MenuLoop):
         ''' List completed tasks. '''
         total = self.list_tasks("done")
         if total and total == self.count():
-            message = "All DONE: You're a DoMaster!"
+            message = f"All DONE: {API.CALT}You're a DoMaster!{API.CALT}"
             stars = '*' * len(message)
             API.do_print(stars, message, stars, sep='\n')
 

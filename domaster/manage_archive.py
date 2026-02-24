@@ -45,7 +45,7 @@ class ManageArchived(MenuLoop):
                 return True
         return False
 
-    def _is_ok(self, yikes)->bool:
+    def is_ok(self, yikes)->bool:
         if os.path.exists(yikes):
             yn = API.get_input(f"Ok to replace {yikes}? y/n ").lower()
             return yn[0] == 'y'

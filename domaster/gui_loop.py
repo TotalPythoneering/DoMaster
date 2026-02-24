@@ -43,6 +43,12 @@ class GuiLoop(MenuDriver):
     def get_int(self, prompt, default=0):
         ''' Prompt to return an integral input, else the default value. '''
         return self.app.get_int(prompt, default)
+
+    def show_dict(self, ops, a_dict:dict, title:str)->bool:
+        return super().show_dict(ops, a_dict, title)
+
+    def get_dict(self, ops, a_dict:dict, title:str):#->tuple[bool, str]:
+        return super().get_dict(ops, a_dict, title)
         
     def input(self, *args, **kwargs):
         ''' Encapsulation for replacement. '''

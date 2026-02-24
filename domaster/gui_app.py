@@ -1,8 +1,8 @@
 # MISSION: Create a reusable GUITUI Framework.
 # STATUS: Research
-# VERSION: 1.0.0
+# VERSION: 2.0.0
 # NOTES: Works well.
-# DATE: 2026-02-21 10:51:42
+# DATE: 2026-02-24 04:48:58
 # FILE: gui_app.py
 # AUTHOR: Randall Nagy
 #
@@ -26,6 +26,7 @@ class GuiApp(tk.Tk):
         self.ops        = ops
         self.options    = options
         self.menu_title = version_title
+        self.content    = None
         
         # status loop information:
         self.utimes    = 0
@@ -44,6 +45,7 @@ class GuiApp(tk.Tk):
         self.fg_color = "yellow"
 
         # application setup & initialization:
+        self.button_pressed = tk.IntVar(value=0)
         self._setup_widgets()
         self._bind_events()
         self.submit_btn.after(1000, self.show_menu())
@@ -78,7 +80,10 @@ class GuiApp(tk.Tk):
         
         # Result Tag: Specifically set output text to red [Original Request]
         self.text_display.tag_config("default_text", foreground="yellow")
-
+        self.text_display.tag_config("hi_text", foreground="white")
+        self.text_display.tag_config("user_text", foreground="aqua")
+        self.text_display.tag_config("error_text", foreground="red")
+        
         # Bottom Input Area
         self.input_frame = tk.Frame(self, bg=self.bg_color)
         self.input_frame.pack(side="bottom", fill="x", padx=20, pady=20)
@@ -87,7 +92,7 @@ class GuiApp(tk.Tk):
         self.submit_btn = tk.Button(
             self.input_frame, 
             text="Submit", 
-            command=self.input,
+            command=self.tui_input,
             bg=self.bg_color,
             fg=self.fg_color,
             font=self.app_font,
@@ -107,12 +112,15 @@ class GuiApp(tk.Tk):
         self.entry.pack(side="left", fill="x", expand=True)
         self.entry.focus_set()
 
+    def do_destroy(self):
+        self.destroy()
+
     def _bind_events(self):
         """Binds keyboard events."""
-        self.bind('<Return>', self.input)  # Enter key support
-        self.bind('<Escape>', lambda e: self.destroy())  # Easy exit for full screen
+        self.bind('<Return>', self.tui_input)  # Enter key support
+        self.bind('<Escape>', self.do_destroy)  # Easy exit for full screen
 
-    def get_int(self, prompt, default=0)->int:
+    def get_dlg_int(self, prompt, default=0)->int:
         ''' Prompt to return an integral input, else the default value. '''
         from domaster.gui_edit import Edit
         dlg = Edit(self, 'DoMaster', prompt, int)
@@ -122,7 +130,7 @@ class GuiApp(tk.Tk):
         dlg.destroy()
         return result
 
-    def get_input(self, prompt, default='')->str:
+    def get_dlg_input(self, prompt, default='')->str:
         ''' Prompt to return an integral input, else the default value. '''
         from domaster.gui_edit import Edit
         dlg = Edit(self, 'DoMaster', prompt, str)
@@ -131,14 +139,37 @@ class GuiApp(tk.Tk):
             result = default
         dlg.destroy()
         return result
+
+    def get_int(self, prompt, default=0)->int:
+        ''' Prompt to return an integral input, else the default value. '''
+        self.print(prompt, sep='', tag='hi_text')
+        self.button_pressed.set(9000)
+        self.submit_btn.wait_variable(self.button_pressed)
+        self.button_pressed.set(0)
+        if not self.content:
+            return default
+        return self.content
+
+    def get_input(self, prompt, default='')->str:
+        ''' Prompt to return an integral input, else the default value. '''
+        self.print(prompt, sep='', tag='hi_text')
+        self.button_pressed.set(9000)
+        self.submit_btn.wait_variable(self.button_pressed)
+        self.button_pressed.set(0)
+        if not self.content:
+            return default
+        return self.content
     
-    def input(self, *args, **kwargs):
+    def tui_input(self, *args, **kwargs):
         """Retrieves input, prints the results, and clears entry."""
-        content = self.entry.get()
-        self.print(content)
+        self.content = self.entry.get()
+        self.print(self.content, tag='user_text')
         self.entry.delete(0, tk.END)
+        if self.button_pressed.get() == 9000:
+            self.button_pressed.set(1)
+            return
         try:
-            which = int(content.strip())
+            which = int(self.content.strip())
             self.utimes += 1; self.uerrors += 1
             keys = list(self.options.keys())
             if which > 0 and which <= len(keys):
@@ -159,9 +190,36 @@ class GuiApp(tk.Tk):
 
     def print(self, *args, **kwargs):
         # Add text with the 'default_text' tag
+        lines = API.parse_ccodes(args)
+        sep = '\n'
+        if 'sep' in kwargs:
+            sep = kwargs['sep']
+        tag =  "default_text"
+        if 'tag' in kwargs:
+            tag = kwargs['tag']
+        for line in lines:
+            for value in line:
+                if value[0] == API.CERR:
+                    tag = 'error_text'
+                elif value[0] == API.CALT:
+                    tag = 'hi_text'
+                self.text_display.insert(
+                    tk.END, f"{value[1]}", tag)
+            self.text_display.insert(
+                tk.END, f"{sep}", tag)
+        self.text_display.see(tk.END)  # Auto-scroll
+
+    def print_o(self, *args, **kwargs):
+        # Add text with the 'default_text' tag
+        sep = '\n'
+        if 'sep' in kwargs:
+            sep = kwargs['sep']
+        tag =  "default_text"
+        if 'tag' in kwargs:
+            tag = kwargs['tag']
         for value in args:
             self.text_display.insert(
-                tk.END, f"{value}\n", "default_text")
+                tk.END, f"{value}{sep}", tag)
         self.text_display.see(tk.END)  # Auto-scroll
 
     def push_ops(self):

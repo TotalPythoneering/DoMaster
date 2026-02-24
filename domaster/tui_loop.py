@@ -31,6 +31,10 @@ class TuiLoop(MenuDriver):
 
     def print(self, *args, **kwargs):
         ''' Encapsulation for replacement. '''
+        if len(args):
+            for ss in range(len(args)):
+                for rm in API.CALT, API.CERR:
+                    args[ss] = args[ss].replace(rm, '')
         print(*args, **kwargs)
 
     def loop_status(self, **kwargs):
@@ -50,6 +54,12 @@ class TuiLoop(MenuDriver):
         except:
             pass
         return result
+
+    def show_dict(self, ops, a_dict:dict, title:str)->bool:
+        return super().show_dict(ops, a_dict, title)
+
+    def get_dict(self, ops, a_dict:dict, title:str):#->tuple[bool, str]:
+        return super().get_dict(ops, a_dict, title)
 
     def do_quit(self):
         if not self.ops_stack:

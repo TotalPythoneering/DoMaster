@@ -13,6 +13,9 @@ if '..' not in sys.path:
 class API:
     ui_driver = None
     is_gui = False
+    CNONE = '✌️' # Default text color.
+    CALT  = '👍' # Start & end ALT color
+    CERR  = '😲' # Start & end ERROR color
     
     @staticmethod
     def init():
@@ -21,6 +24,32 @@ class API:
         from tui_loop import TuiLoop
         API.ui_driver = TuiLoop()
         is_gui = False
+
+    def parse_ccodes(*args):#->list[list[str, str]]
+        ''' Parse string[s] into colorizable lines & line segments. '''
+        lines = []
+        for tup in args:
+            seg = ''; line = []; esc = API.CNONE
+            for arg in tup:
+                for ch in str(arg):
+                    found = False
+                    for comp in API.CERR, API.CALT, API.CNONE:
+                        if ch == comp:
+                            found = True
+                            if seg:
+                                line.append([esc, seg])
+                                seg = ''
+                            esc = comp
+                            break
+                    if not found:
+                        seg += ch
+
+                if seg:
+                    line.append([esc, seg])
+                if not line:
+                    line.append([API.CNONE, arg])
+                lines.append(line)
+        return lines
 
     @staticmethod
     def set_gui(ops, options, VERSION):
@@ -56,6 +85,14 @@ class API:
     @staticmethod
     def get_int(prompt, default=0)->int:
         return API.ui_driver.get_int(prompt, default)
+    
+    @staticmethod
+    def show_dict(ops, a_dict:dict, title:str): #->tuple[bool, str]
+        return API.ui_driver.show_dict(ops, a_dict, title)
+    
+    @staticmethod
+    def get_dict(ops, a_dict:dict, title:str): #->tuple[bool, str]
+        return API.ui_driver.get_dict(ops, a_dict, title)
 
     @staticmethod
     def is_done():
@@ -87,31 +124,71 @@ from abc import ABC, abstractmethod
 class MenuDriver(MenuLoop, ABC):
 
     @abstractmethod
-    def set_color(fore, back)->tuple:
+    def set_color(self, fore, back)->tuple:
         pass
 
     @abstractmethod
-    def input(*args, **kwargs):
+    def input(self, *args, **kwargs):
         pass
 
     @abstractmethod
-    def print(*args, **kwargs):
+    def print(self, *args, **kwargs):
         pass
 
     @abstractmethod
-    def loop_status(**kwargs):
+    def loop_status(self, **kwargs):
         pass
 
     @abstractmethod
-    def get_int(prompt, default=0)->int:
+    def get_int(self, prompt, default=0)->int:
         pass
+
+    @abstractmethod
+    def show_dict(self, ops, a_dict:dict, title:str)->bool:
+        if not ops or not a_dict:
+            return False, "Error: Bad input data."
+        for ss, key in enumerate(a_dict, 1):
+            API.print(f"{ss:02}.) {key} [{a_dict[key]}]")
+        return True, "Success."
+
+    @abstractmethod
+    def get_dict(self, ops, a_dict:dict, title:str)->tuple[bool, str]:
+        while True:
+            result = API.show_dict(ops, a_dict, title)
+            if not result[0]:
+                return result
+            which = API.get_int("Which # to edit? ")
+            if not which:
+                return False, "User exit."
+            which = which - 1
+            if which < 0 or which > len(a_dict):
+                API.print(f"Bad field number.")
+                continue
+            items = a_dict.get_items()
+            API.print(f"{items[0]}: [{items[1]}]")
+            value = API.get_input(f"Update {items[0]}: ")
+            if not value:
+                API.print("Aborted.")
+                return False, "User exit."
+            a_dict[items[0]] = value
+            # TODO: Untested.
 
     @abstractmethod
     def do_quit(self):
         self._b_done = True
 
     @abstractmethod
-    def menu_ops(ops, options, title)->bool:
+    def menu_ops(self, ops, options, title)->bool:
         pass
 
+
+if __name__ == '__main__':
+    for line in API.parse_ccodes(f'one{API.CALT}TWO{API.CALT}three'):
+        print(line)
+
+    for line in API.parse_ccodes(f'one{API.CERR}TWO{API.CERR}three'):
+        print(line)
+
+    for line in API.parse_ccodes(f'one{API.CNONE}TWO{API.CNONE}three'):
+        print(line)
 
