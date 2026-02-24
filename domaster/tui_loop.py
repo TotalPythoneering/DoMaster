@@ -1,6 +1,6 @@
 # MISSION: Provide a reusable menu / sub-menu framework.
 # STATUS: Research
-# VERSION: 1.0.0
+# VERSION: 1.0.1
 # NOTES: Lighty tested. See the project for full documentation.
 # DATE: 2026-02-21 10:32:43
 # FILE: tui_loop.py
@@ -31,7 +31,6 @@ class TuiLoop(MenuDriver):
 
     def print(self, *args, **kwargs):
         ''' Encapsulation for replacement. '''
-        a_list = []
         if len(args):
             for ss in range(len(args)):
                 for rm in API.CALT, API.CERR, API.CNONE:
@@ -83,7 +82,8 @@ class TuiLoop(MenuDriver):
 
     def show_menu(self):
         ''' Support reveal and redraw requirements '''
-        line = '*' * len(self.title)
+        seg = '*' * len(self.title)
+        line = '\n' + seg
         self.print(self.title, line, sep='\n')
         keys = list(self.options.keys())
         times=0;errors=0;selection=None;entry=None

@@ -1,6 +1,6 @@
 # MISSION: Create a reusable GUITUI Framework.
 # STATUS: Research
-# VERSION: 2.0.0
+# VERSION: 2.0.1
 # NOTES: Works well.
 # DATE: 2026-02-24 04:48:58
 # FILE: gui_app.py
@@ -21,7 +21,7 @@ class GuiApp(tk.Tk):
         super().__init__()
 
         # menu loop information:
-        self.is_app_done    = False
+        self.is_app_done= False
         self.ops_stack  = []
         self.ops        = ops
         self.options    = options
@@ -176,14 +176,15 @@ class GuiApp(tk.Tk):
                 self.utimes = 0
                 selection = keys[which-1]
                 if selection in self.options: # double check
-                    self.print('*'*which, selection)
                     self.uerrors = 0          # RESET
                     self.options[selection]()
+                else:
+                    self.show_menu()
+                return
             else:
                 self.print(f"Invalid number {which}.")
         except ValueError:
             self.print("Numbers only, please.")
-        self.show_menu()
 
     def do_quit(self):
         self.pop_ops()
@@ -207,19 +208,6 @@ class GuiApp(tk.Tk):
                     tk.END, f"{value[1]}", tag)
             self.text_display.insert(
                 tk.END, f"{sep}", tag)
-        self.text_display.see(tk.END)  # Auto-scroll
-
-    def print_o(self, *args, **kwargs):
-        # Add text with the 'default_text' tag
-        sep = '\n'
-        if 'sep' in kwargs:
-            sep = kwargs['sep']
-        tag =  "default_text"
-        if 'tag' in kwargs:
-            tag = kwargs['tag']
-        for value in args:
-            self.text_display.insert(
-                tk.END, f"{value}{sep}", tag)
         self.text_display.see(tk.END)  # Auto-scroll
 
     def push_ops(self):
@@ -250,7 +238,8 @@ class GuiApp(tk.Tk):
     def show_menu(self):
         if self.is_app_done:
             return
-        line = '*' * len(self.menu_title)
+        seg = '~' * len(self.menu_title)
+        line = '\n' + seg
         self.print(self.menu_title, line, sep='\n')
         keys = list(self.options.keys())
         times=0;errors=0;selection=None;entry=None

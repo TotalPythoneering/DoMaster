@@ -45,8 +45,9 @@ class API:
                         seg += ch
                 if seg:
                     line.append([esc, seg])
-                if not line:
-                    line.append([API.CNONE, arg])
+                    seg = ''
+            if not line:
+                line.append([API.CNONE, arg])
             lines.append(line)
         return lines
 
