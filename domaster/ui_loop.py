@@ -13,7 +13,7 @@ if '..' not in sys.path:
 class API:
     ui_driver = None
     is_gui = False
-    CNONE = '✌️' # Default text color.
+    CNONE = '✌' # Default text color.
     CALT  = '👍' # Start & end ALT color
     CERR  = '😲' # Start & end ERROR color
     

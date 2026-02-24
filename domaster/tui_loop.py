@@ -31,11 +31,14 @@ class TuiLoop(MenuDriver):
 
     def print(self, *args, **kwargs):
         ''' Encapsulation for replacement. '''
+        a_list = []
         if len(args):
             for ss in range(len(args)):
-                for rm in API.CALT, API.CERR:
-                    args[ss] = args[ss].replace(rm, '')
-        print(*args, **kwargs)
+                for rm in API.CALT, API.CERR, API.CNONE:
+                    val = args[ss].replace(rm, '')
+                print(val)
+        else:
+            print(*args, **kwargs)
 
     def loop_status(self, **kwargs):
         ''' Operational state before each loop.
