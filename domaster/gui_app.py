@@ -223,7 +223,6 @@ class GuiApp(tk.Tk):
         self.text_display.see(tk.END)  # Auto-scroll
 
     def push_ops(self):
-        self.print(f"pushed {self.ops.__class__}")
         self.ops_stack.append([self.ops, self.options, self.menu_title])
 
     def pop_ops(self): 
@@ -232,7 +231,6 @@ class GuiApp(tk.Tk):
             self.is_app_done = True
             self.destroy()
         else:
-            self.print(f"popped {self.ops.__class__}")
             # Show previous menu options:
             frame = self.ops_stack.pop()
             self.ops = frame[0]
