@@ -285,8 +285,8 @@ class DoMaster(MenuLoop):
             if a_row:
                 new_val = a_row['uuid']
             else:
-                new_val = 0
-                API.do_print(f"Task #{new_val} not found. Set to Zero.")
+                API.do_print(f"Task #{new_val} not found. Ignored.")
+                return
                 
         conn = sqlite3.connect(self.db_file)
         conn.execute(f"UPDATE todo SET {field} = ? WHERE ID = ?", (new_val, tid))
@@ -369,9 +369,9 @@ class DoMaster(MenuLoop):
         ''' List completed tasks. '''
         total = self.list_tasks("done")
         if total and total == self.count():
-            message = f"All DONE: {API.CALT}You're a DoMaster!{API.CALT}"
+            message = f"{API.CUSER}All DONE: {API.CUSER}{API.CALT}You're a DoMaster!{API.CALT}"
             stars = '*' * len(message)
-            API.do_print(stars, message, stars, sep='\n')
+            API.do_print(stars,message,stars, sep='\n')
 
     def list_all(self):
         ''' List all tasks. '''

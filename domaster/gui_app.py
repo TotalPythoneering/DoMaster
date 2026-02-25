@@ -198,10 +198,14 @@ class GuiApp(tk.Tk):
             tag = kwargs['tag']
         for line in lines:
             for value in line:
-                if value[0] == API.CERR:
+                if value[0] == API.CNONE:
+                    tag = 'default_text'
+                elif value[0] == API.CERR:
                     tag = 'error_text'
                 elif value[0] == API.CALT:
                     tag = 'hi_text'
+                elif value[0] == API.CUSER:
+                    tag = 'user_text'
                 self.text_display.insert(
                     tk.END, f"{value[1]}", tag)
             self.text_display.insert(

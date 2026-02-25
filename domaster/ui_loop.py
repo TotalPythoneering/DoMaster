@@ -13,9 +13,10 @@ if '..' not in sys.path:
 class API:
     ui_driver = None
     is_gui = False
-    CNONE = '✌' # Default text color.
-    CALT  = '👍' # Start & end ALT color
-    CERR  = '😲' # Start & end ERROR color
+    CNONE = '✌' # Use default text color.    (green)
+    CUSER = '👉' # Start user input           (aqua)
+    CALT  = '👍' # Start ALT color            (white)
+    CERR  = '😲' # Start ERROR color          (red)
     
     @staticmethod
     def init():
@@ -24,31 +25,41 @@ class API:
         from tui_loop import TuiLoop
         API.ui_driver = TuiLoop()
         is_gui = False
+    
+    def parse_coddes_str(a_str:str)->list:
+        seg = ''; line = []; esc = API.CNONE
+        for ch in a_str:
+            found = False
+            for comp in API.CUSER, API.CERR, API.CALT, API.CNONE:
+                if ch == comp:
+                    found = True
+                    if seg:
+                        line.append([esc, seg])
+                        seg = ''
+                    esc = comp
+                    break
+            if not found:
+                seg += ch
+        if seg:
+            line.append([API.CNONE, seg])
+            seg = ''
+        if not line:
+            line.append([API.CNONE, ' '])
+        return line
 
-    def parse_ccodes(*args):#->list[list[str, str]]
+    def parse_ccodes(args:any):#->list[list[str, str]]
         ''' Parse string[s] into colorizable lines & line segments. '''
         lines = []
-        for tup in args:
-            seg = ''; line = []; esc = API.CNONE
-            for arg in tup:
-                for ch in str(arg):
-                    found = False
-                    for comp in API.CERR, API.CALT, API.CNONE:
-                        if ch == comp:
-                            found = True
-                            if seg:
-                                line.append([esc, seg])
-                                seg = ''
-                            esc = comp
-                            break
-                    if not found:
-                        seg += ch
-                if seg:
-                    line.append([esc, seg])
-                    seg = ''
-            if not line:
-                line.append([API.CNONE, ' '])
-            lines.append(line)
+        if isinstance(args, str):
+            return [API.parse_coddes_str(args)]
+        for arg in args:
+            if isinstance(arg, str):
+                lines.append(API.parse_coddes_str(arg))
+            elif isinstance(arg, (list, tuple)):
+                for item in arg:
+                    lines.append(API.parse_coddes_str(item))
+            else:
+                lines.append(API.parse_coddes_str(str(arg)))
         return lines
 
     @staticmethod
@@ -183,12 +194,47 @@ class MenuDriver(MenuLoop, ABC):
 
 
 if __name__ == '__main__':
-    for line in API.parse_ccodes(f'one{API.CALT}TWO{API.CALT}three'):
-        print(line)
+    codes = [
+        [API.CALT, "Alternate"],
+        [API.CERR, "Error"],
+        [API.CNONE, "None"],
+        [API.CUSER, "User"],
+    ]
 
-    for line in API.parse_ccodes(f'one{API.CERR}TWO{API.CERR}three'):
-        print(line)
+    # TEST ONE: Parse uniline into multiple segments:
+    the_line = ''
+    for clause in codes:
+        the_line += f'{clause[0]}{clause[1]}'
 
-    for line in API.parse_ccodes(f'one{API.CNONE}TWO{API.CNONE}three'):
-        print(line)
+    tresults = API.parse_ccodes(the_line)
 
+    if len(tresults) != 1:
+        print(f'TC01a: LINE COUNT ERROR [{len(tresults)}]')
+        print(tresults)
+    else:
+        if tresults == [codes]:
+            print('TC01: Testing Success')
+            print('\t',tresults)
+        else:
+            print("TC01b: Testing Error")
+            print('\t',codes)
+            print('\t',tresults)
+
+    # TEST TWO: Parse collection of string:
+    print()
+    the_lines = []
+    for clause in codes:
+        the_lines.append(f'{clause[0]}{clause[1]}{clause[0]}')
+    tresults = API.parse_ccodes(the_lines)
+    if len(tresults) != 4:
+        print(f"TC02a: LINE COUNT MISMATCH [{len(tresults)}]")
+        print('\t',codes)
+        print('\t',tresults)
+    else:
+        if tresults == [[['👍', 'Alternate']], [['😲', 'Error']], [['✌', 'None']], [['👉', 'User']]]:
+            print('TC02: Testing Success')
+            print('\t',tresults)
+        else:
+            print("TC02b: Testing Error")
+            print('\t',the_lines)
+            print('\t',tresults)
