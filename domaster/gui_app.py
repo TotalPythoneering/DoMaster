@@ -1,6 +1,6 @@
 # MISSION: Create a reusable GUITUI Framework.
 # STATUS: Research
-# VERSION: 2.1.0
+# VERSION: 2.1.1
 # NOTES: Works well.
 # DATE: 2026-02-26 06:17:51
 # FILE: gui_app.py
@@ -163,7 +163,7 @@ class GuiApp(tk.Tk):
     def tui_input(self, *args, **kwargs):
         """Retrieves input, prints the results, and clears entry."""
         self.content = self.entry.get()
-        self.print(self.content, tag='hi_text')
+        self.print(self.content, tag='user_text')
         self.entry.delete(0, tk.END)
         if self.button_pressed.get() == 9000:
             self.button_pressed.set(1)
@@ -193,12 +193,12 @@ class GuiApp(tk.Tk):
         sep = '\n'
         if 'sep' in kwargs:
             sep = kwargs['sep']
-        tag =  "default_text"
-        if 'tag' in kwargs:
-            tag = kwargs['tag']
+        tag =  None
         for line in lines:
             for value in line:
-                if value[0] == API.CNONE:
+                if 'tag' in kwargs:
+                    tag = kwargs['tag']
+                elif value[0] == API.CNONE:
                     tag = 'default_text'
                 elif value[0] == API.CERR:
                     tag = 'error_text'
