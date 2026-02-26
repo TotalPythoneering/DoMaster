@@ -1,8 +1,8 @@
 # MISSION: Create a reusable GUITUI Framework.
 # STATUS: Research
-# VERSION: 2.0.1
+# VERSION: 2.1.0
 # NOTES: Works well.
-# DATE: 2026-02-24 04:48:58
+# DATE: 2026-02-26 06:17:51
 # FILE: gui_app.py
 # AUTHOR: Randall Nagy
 #
@@ -163,7 +163,7 @@ class GuiApp(tk.Tk):
     def tui_input(self, *args, **kwargs):
         """Retrieves input, prints the results, and clears entry."""
         self.content = self.entry.get()
-        self.print(self.content, tag='user_text')
+        self.print(self.content, tag='hi_text')
         self.entry.delete(0, tk.END)
         if self.button_pressed.get() == 9000:
             self.button_pressed.set(1)
@@ -226,7 +226,6 @@ class GuiApp(tk.Tk):
             self.ops = frame[0]
             self.options = frame[1]
             self.menu_title = frame[2]
-            self.show_menu()
 
     def notify_menu_ops(self, ops, options, menu_title)->bool:
         ''' Update the information for the main loop. '''
@@ -239,8 +238,7 @@ class GuiApp(tk.Tk):
     def show_menu(self):
         if self.is_app_done:
             return
-        seg = '~' * len(self.menu_title)
-        line = '\n' + seg
+        line = '~' * len(self.menu_title)
         self.print(self.menu_title, line, sep='\n')
         keys = list(self.options.keys())
         times=0;errors=0;selection=None;entry=None

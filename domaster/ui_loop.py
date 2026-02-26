@@ -2,7 +2,7 @@
 # STATUS: Testing
 # VERSION: 1.0.0
 # NOTES: Lighty tested. See the project for full documentation.
-# DATE: 2026-02-21 10:40:11
+# DATE: 2026-02-26 06:18:10
 # FILE: ui_loop.py
 # AUTHOR: Randall Nagy
 #
@@ -194,6 +194,15 @@ class MenuDriver(MenuLoop, ABC):
 
 
 if __name__ == '__main__':
+
+    # TEST: Simple WYSIWYG:
+    tresults = API.parse_ccodes('8')
+    # A list of one line-list.
+    if tresults != [[['✌', '8']]]:
+        print(f'TC01: LINE COUNT ERROR [{len(tresults)}]')
+        print(tresults)
+        sys.exit()
+
     codes = [
         [API.CALT, "Alternate"],
         [API.CERR, "Error"],
@@ -201,26 +210,22 @@ if __name__ == '__main__':
         [API.CUSER, "User"],
     ]
 
-    # TEST ONE: Parse uniline into multiple segments:
+    # TEST: Parse uniline into multiple segments:
     the_line = ''
     for clause in codes:
         the_line += f'{clause[0]}{clause[1]}'
 
     tresults = API.parse_ccodes(the_line)
-
-    if len(tresults) != 1:
+    # A list of one line-list.
+    if tresults != [[['👍', 'Alternate'], ['😲', 'Error'], ['✌', 'None'], ['✌', 'User']]]:
         print(f'TC01a: LINE COUNT ERROR [{len(tresults)}]')
         print(tresults)
     else:
-        if tresults == [codes]:
-            print('TC01: Testing Success')
-            print('\t',tresults)
-        else:
-            print("TC01b: Testing Error")
-            print('\t',codes)
-            print('\t',tresults)
+        print('TC01: Testing Success')
+        print('\t',tresults)
 
-    # TEST TWO: Parse collection of string:
+
+    # TEST: Parse collection of string:
     print()
     the_lines = []
     for clause in codes:
@@ -231,6 +236,7 @@ if __name__ == '__main__':
         print('\t',codes)
         print('\t',tresults)
     else:
+        # A list of four line-lists.
         if tresults == [[['👍', 'Alternate']], [['😲', 'Error']], [['✌', 'None']], [['👉', 'User']]]:
             print('TC02: Testing Success')
             print('\t',tresults)
