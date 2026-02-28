@@ -13,10 +13,10 @@ Here is a [primer video](https://youtu.be/Xg3zdm0wZ7I).
 
 Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j7lk9PRjyE).
 
-## 🌟 Works in Process
+## 🌟 The GuiTui (TuiGui?) Experience
 👉 Presently testing the "GuiTui" concept.
 
-The idea is to use the Tkinter ***G.U.I*** whenever possible, yet preserve the ***T.U.I*** experience.
+Here is a video on how to [download the code](https://youtu.be/xYsrTbXEBhM) and try the new ***G.U.I*** user interface where Tkinter is installed, yet preserve the ***T.U.I*** experience whenever its not.
 
 To review the GuiTui concept:
 
@@ -86,6 +86,7 @@ Happy 'Spire-ring!
 🫡 
 
 (*) and yes, with care we might even *export* from one `Db` to *import* into the other.
+
 
 
 
