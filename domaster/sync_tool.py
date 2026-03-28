@@ -1,8 +1,8 @@
 # MISSION: Manage a to-do list or / and ideas.
 # STATUS: Production
-# VERSION: 1.1.2
+# VERSION: 1.1.3
 # NOTES: Tested. See the project for full documentation.
-# DATE: 2026-01-27 08:38:38
+# DATE: 2026-03-28 11:34:38
 # FILE: sync_tool.py
 # AUTHOR: Randall Nagy
 #
@@ -21,6 +21,7 @@ set of test cases.
 import os, sys
 import csv, uuid
 import sqlite3
+from domaster.ui_loop import *
 
 try:
     if '..' not in sys.path:
@@ -103,7 +104,7 @@ class SQLiteCSVSync:
             else:
                 new_rows += 1
         conn.close()
-        yn = driver.input(f'Ok to update {old_rows} and create {new_rows} todo items? y/n ').strip().lower()
+        yn = API.ui_driver.input(f'Ok to update {old_rows} and create {new_rows} todo items? y/n ').strip().lower()
         if not yn or yn[0] != 'y':
             return -1
         

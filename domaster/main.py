@@ -25,7 +25,7 @@ from domaster.keeper import Keeps
 APP_NAME  = "DoMaster"
 FILE_TYPE = ".db"
 FILE_ROOT = "domaster" + FILE_TYPE
-VERSION   = APP_NAME + " 2026.02.21"
+VERSION   = APP_NAME + " 2026.03.28"
 DATA_TYPE = ".options"
 
 class DoMaster(MenuLoop):
