@@ -1,8 +1,8 @@
 # MISSION: Hoist yet another to-do manager 'ore Modern Python.
 # STATUS: Production
-# VERSION: 4.0.0
+# VERSION: 5.0.0
 # NOTES: https://github.com/TotalPythoneering/DoMaster
-# DATE: 2026-02-21 10:42:40
+# DATE: 2026-03-30 06:42:40
 # FILE: main.py
 # AUTHOR: Randall Nagy
 #
@@ -336,7 +336,11 @@ class DoMaster(MenuLoop):
         if filter_type == "pending":
             query += " WHERE date_done IS NULL OR date_done = ''"
         elif filter_type == "done":
-            query += " WHERE date_done IS NOT NULL AND date_done != ''"        
+            query += " WHERE date_done IS NOT NULL AND date_done != ''"
+        elif filter_type == "all":
+            pass
+        elif filter_type:
+            query += f' WHERE project_name LIKE "%{filter_type}%" OR task_description LIKE "%{filter_type}%"' 
         query += " ORDER BY project_name ASC, task_priority ASC, date_created"
         return query
 
@@ -377,6 +381,12 @@ class DoMaster(MenuLoop):
         ''' List all tasks. '''
         self.list_tasks("all")
 
+    def search_all(self):
+        ''' Search all tasks. '''
+        one_word = API.get_input("Enter word: ")
+        if one_word:
+            self.list_tasks(one_word)        
+
     def project_report(self):
         ''' Show all project names. '''
         conn = sqlite3.connect(self.db_file)
@@ -399,6 +409,7 @@ def mainloop():
         'List Pendings':ops.list_pending,
         'List Done':ops.list_done,
         'List All':ops.list_all,
+        'Search':ops.search_all,
         'Projects':ops.project_report,
         'Swap Db':ops.swap_db,
         'File Manager':ops.manage_files,
