@@ -29,9 +29,15 @@ DATA_TYPE = ".options"
 
 
 class TodoApp:
-    def __init__(self, root, database=FILE_ROOT):
+    def __init__(self, root, database=None):
         self.root = root
-        self.database = database
+        if not database:
+            ''' Use the MODULE / GLOBAL database. '''
+            zdir = os.path.dirname(os.path.abspath(__file__))
+            self.database = os.path.join(zdir, FILE_ROOT)
+        else:
+            self.database = database
+
         self.root.title(f"{APP_NAME} - {VERSION}")
         self.root.geometry("1100x800")
         
