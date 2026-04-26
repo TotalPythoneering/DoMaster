@@ -7,13 +7,13 @@ Forever free & open **DoMaster** allows us to manage any infinite list of action
 
 ## 🌟NEW!
 
-👉Automatic TUI/GUI detection:
+👉 Automatic TUI/GUI detection:
 ```python -m domaster```
 
-👉A new GUI:
+👉 A new GUI:
 ```python -m domaster.tkdo```
  
-👉A new GUI:A new **database backup** feature can now clone our GLOBAL database to another location.
+👉 A new **database backup** feature can now clone our GLOBAL database to another location.
 
 ## 🌟 STATUS
 Good to go. Use the 'pip installer in the dist folder.
