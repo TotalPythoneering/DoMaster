@@ -2,12 +2,18 @@
 
 **DoMaster** is a robust, lightweight Console TUI, GUI, and also a TuiGui (!) User Interface task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
-## 🌟NEW!
-python -m domaster.tkdo
-
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
-A new **database backup** feature can now clone our GLOBAL database to another location.
+
+## 🌟NEW!
+
+👉Automatic TUI/GUI detection:
+```python -m domaster```
+
+👉A new GUI:
+```python -m domaster.tkdo```
+ 
+👉A new GUI:A new **database backup** feature can now clone our GLOBAL database to another location.
 
 ## 🌟 STATUS
 Good to go. Use the 'pip installer in the dist folder.
