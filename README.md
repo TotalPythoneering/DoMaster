@@ -1,6 +1,6 @@
 # DoMaster 🛠️
 
-**DoMaster** is a robust, lightweight Console TUI, GUI, and also a TuiGui (!) User Interface task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
+**DoMaster** is a robust, lightweight task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
