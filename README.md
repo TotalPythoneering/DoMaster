@@ -1,6 +1,9 @@
 # DoMaster 🛠️
 
-**DoMaster** is a robust, lightweight Console Terminal User Interface (TUI) task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
+**DoMaster** is a robust, lightweight Console TUI, GUI, and also a TuiGui (!) User Interface task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
+
+## 🌟NEW!
+python -m domaster.tkdo
 
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
@@ -68,7 +71,18 @@ To avoid database `pwd` confusion, the best idea is to always use Python's packa
 
 ```
 python -m pip install whatever.whl
+```
+
+~ then ~
+
+```
 python -m domaster
+```
+
+~ or ~
+
+```
+python -m domster.tkdo
 ```
 
 🎓 **Notes:** 
