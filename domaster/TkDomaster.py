@@ -1,6 +1,6 @@
 # MISSION: Full GUI interface to the DOMASTER database.
 # STATUS: Research.
-# VERSION: 18.2.0
+# VERSION: 18.2.1
 # NOTES: Selected feature updates. Stand alone usage.
 # DATE: 2026-04-24 04:14:57
 # FILE: TkDomaster.py
@@ -8,6 +8,12 @@
 #
 # TODO: Make ID columns shorter.
 #
+
+APP_NAME  = "DoMaster Pro"
+FILE_TYPE = ".db"
+FILE_ROOT = "domaster" + FILE_TYPE
+VERSION   = APP_NAME + " 2026.04.29"
+DATA_TYPE = ".options"
 
 import os, sys
 if '..' not in sys.path:
@@ -20,12 +26,6 @@ import uuid
 import csv
 import webbrowser
 from datetime import datetime
-
-APP_NAME  = "DoMaster Pro"
-FILE_TYPE = ".db"
-FILE_ROOT = "domaster" + FILE_TYPE
-VERSION   = APP_NAME + " 2026.04.24"
-DATA_TYPE = ".options"
 
 
 class TodoApp:
@@ -45,6 +45,10 @@ class TodoApp:
         style.theme_use("classic") # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
         
         self.hide_completed = tk.BooleanVar(value=False)
+
+        self.font = ("Couier", 16)
+        self.style = ttk.Style()
+        self.style.configure("Treeview", font=self.font, rowheight=32)
 
         # --- MAIN MENU BAR ---
         self.menu_bar = tk.Menu(self.root)
