@@ -8,9 +8,19 @@ Forever free & open **DoMaster** allows us to manage any infinite list of action
 ## 🌟NEW!
 
 👉 Automatic TUI/GUI detection:
+
+```DoMaster```
+
+~ or ~
+
 ```python -m domaster```
 
 👉 A new GUI:
+
+``` TdDo ```
+
+~ or ~
+
 ```python -m domaster.tkdo```
  
 👉 A new **database backup** feature can now clone our GLOBAL database to another location.
