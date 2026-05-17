@@ -17,7 +17,7 @@ Forever free & open **DoMaster** allows us to manage any infinite list of action
 
 👉 A new GUI:
 
-``` TdDo ```
+``` TkDo ```
 
 ~ or ~
 
