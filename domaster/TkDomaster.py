@@ -1,6 +1,6 @@
 # MISSION: Full GUI interface to the DOMASTER database.
 # STATUS: Research.
-# VERSION: 19.0.0
+# VERSION: 19.1.0
 # NOTES: Selected feature updates. Stand alone usage.
 # DATE: 2026-04-24 04:14:57
 # FILE: TkDomaster.py
@@ -12,7 +12,7 @@
 APP_NAME  = "DoMaster Pro"
 FILE_TYPE = ".db"
 FILE_ROOT = "domaster" + FILE_TYPE
-VERSION   = APP_NAME + " 2026.05.20"
+VERSION   = APP_NAME + " 2026.05.20b"
 DATA_TYPE = ".options"
 
 import os, sys
@@ -115,6 +115,7 @@ class TodoApp:
             self.tree.heading(col, text=col, command=lambda _c=col: self.tree_sort_column(_c, False))
         self.tree.tag_configure("done", background="#d3d3d3", foreground="#666666")
         self.tree.tag_configure("todo", foreground="blue")
+        
         self.tree.pack(pady=10, padx=10, fill="both", expand=True)
 
         # Bindings
@@ -321,7 +322,9 @@ class TodoApp:
         l = [(self.tree.set(k, col), k) for k in self.tree.get_children('')]
         l.sort(reverse=reverse)
         for i, (v, k) in enumerate(l):
-            self.tree.move(k, '', i); self.tree.item(k, tags=('oddrow' if i % 2 != 0 else 'evenrow',))
+            item_data = self.tree.item(k)
+            ztags = item_data.get('tags')
+            self.tree.move(k, '', i); self.tree.item(k, tags=ztags)
         self.tree.heading(col, command=lambda: self.tree_sort_column(col, not reverse))
 
 
