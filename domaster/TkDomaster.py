@@ -1,6 +1,6 @@
 # MISSION: Full GUI interface to the DOMASTER database.
 # STATUS: Research.
-# VERSION: 18.2.1
+# VERSION: 19.0.0
 # NOTES: Selected feature updates. Stand alone usage.
 # DATE: 2026-04-24 04:14:57
 # FILE: TkDomaster.py
@@ -12,7 +12,7 @@
 APP_NAME  = "DoMaster Pro"
 FILE_TYPE = ".db"
 FILE_ROOT = "domaster" + FILE_TYPE
-VERSION   = APP_NAME + " 2026.04.29"
+VERSION   = APP_NAME + " 2026.05.20"
 DATA_TYPE = ".options"
 
 import os, sys
@@ -110,7 +110,9 @@ class TodoApp:
         # --- Data Table ---
         cols = ("ID", "Project", "Created", "Description", "Priority", "Next")
         self.tree = ttk.Treeview(root, columns=cols, show="headings")
-        for col in cols: self.tree.heading(col, text=col)
+        
+        for col in cols:
+            self.tree.heading(col, text=col, command=lambda _c=col: self.tree_sort_column(_c, False))
         self.tree.tag_configure("done", background="#d3d3d3", foreground="#666666")
         self.tree.tag_configure("todo", foreground="blue")
         self.tree.pack(pady=10, padx=10, fill="both", expand=True)
@@ -314,6 +316,14 @@ class TodoApp:
             with sqlite3.connect(self.database) as conn:
                 conn.execute("DELETE FROM todo WHERE ID = ?", (tid,))
             self.load_data()
+
+    def tree_sort_column(self, col, reverse):
+        l = [(self.tree.set(k, col), k) for k in self.tree.get_children('')]
+        l.sort(reverse=reverse)
+        for i, (v, k) in enumerate(l):
+            self.tree.move(k, '', i); self.tree.item(k, tags=('oddrow' if i % 2 != 0 else 'evenrow',))
+        self.tree.heading(col, command=lambda: self.tree_sort_column(col, not reverse))
+
 
 if __name__ == "__main__":
     root = tk.Tk()
