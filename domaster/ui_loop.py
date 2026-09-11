@@ -163,7 +163,7 @@ class MenuDriver(MenuLoop, ABC):
         return True, "Success."
 
     @abstractmethod
-    def get_dict(self, ops, a_dict:dict, title:str)->tuple[bool, str]:
+    def get_dict(self, ops, a_dict:dict, title:str):#->tuple[bool, str]:
         while True:
             result = API.show_dict(ops, a_dict, title)
             if not result[0]:
