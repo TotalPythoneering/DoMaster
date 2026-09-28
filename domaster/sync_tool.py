@@ -23,12 +23,11 @@ import csv, uuid
 import sqlite3
 from domaster.ui_loop import *
 
-try:
-    if '..' not in sys.path:
-        sys.path.insert(0,'..')
-    from domaster.upsert import UpsertSqlite
-except Exception as ex:
-    pass
+
+if '..' not in sys.path:
+    sys.path.insert(0,'..')
+from domaster.Upsert import UpsertSqlite
+
 
 class SQLiteCSVSync:
     def __init__(self, db_path, table_name, driver):
