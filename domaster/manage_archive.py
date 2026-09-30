@@ -1,9 +1,9 @@
 # MISSION: Manage AUTOMATIC ARCHIVAL options.
 # STATUS: Research
-# VERSION: 1.0.0
+# VERSION: 2.0.0
 # NOTES: GLOBAL database needs to be backed-up. Even auto.
 # ManageArchived keeps the location + data for ARCHIVAL 'self.
-# DATE: 2026-02-21 10:54:08
+# DATE: 2026-09-30 03:08:08
 # FILE: manage_archive.py
 # AUTHOR: Randall Nagy
 #
@@ -57,6 +57,11 @@ class ManageArchived(MenuLoop):
         if not os.path.exists(source):
             API.do_print(f"Error: Unable to stat [{source}].")
             return False
+        
+        if self.mega.count() == 0:
+            API.do_print("Database is empty.")
+            return False
+        
         if self.is_ok(archive):
             if os.path.exists(archive):
                 os.unlink(archive)
