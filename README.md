@@ -2,6 +2,12 @@
 
 **DoMaster** is a robust, lightweight task manager built with Python and SQLite. It is designed for high-performance, keyboard-driven workflows to manage complex projects with task dependencies and detailed reporting.
 
+---
+
+"***The best way to have a good idea is to have lots of ideas and throw the bad ones away.***" --- Linus Pauling
+
+---
+
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
 Available on [PyPy.org](https://pypi.org/project/domaster/) we can now install the latest release of DoMaster using:
