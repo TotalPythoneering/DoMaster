@@ -4,29 +4,38 @@
 
 Forever free & open **DoMaster** allows us to manage any infinite list of actionable-items either in the (1) present working directory, or in the (2) single GLOBAL database ... (*)
 
-## 🌟NEW!
-
-👉 Available on [PyPy.org](https://pypi.org/project/domaster/) we can now install the latest release of DoMaster using:
+Available on [PyPy.org](https://pypi.org/project/domaster/) we can now install the latest release of DoMaster using:
 
 ```pip install domaster```
 
+## 🌟User Interfaces
+Far too handy to deprive DevOps, developers, or power-user 'pros of any important do-list-manager **DoMaster** sports an unheard-of total of three (3) user interfaces: 
 
-## 🌟 The GuiTui (TuiGui?) Experience
-👉 The "GuiTui" concept.
+(1) The pure TUI to support 'Ops personnel:
 
-Here is a video on how to [download the code](https://youtu.be/xYsrTbXEBhM) and try the new ***G.U.I*** user interface where Tkinter is installed, yet preserve the ***T.U.I*** experience whenever its not.
+```DoMaster```
 
-To review the GuiTui concept:
+(2) The TuiGui to use the same TUI metaphor whenever we've a GUI empestered:
 
-✔️ Download & unzip the code.
+```DoMaster```
 
-✔️ Change to the parent directory of the **domaster** folder.
+(3) The GUI mode to enjoy the classic Xerox / PARC / Mac / Windows / XWindows experience:
 
-✔️ python -m domaster
+``` TkDo ```
 
 ~ or ~
 
-✔️ python3 -m domaster
+```python -m domaster.tkdo```
+
+🪄All using the same database format and nexus, of course. 🤓
+
+## 🌟 Videos
+
+👉 How to [download the code](https://youtu.be/xYsrTbXEBhM) and try the new ***G.U.I*** user interface where Tkinter is installed, yet preserve the ***T.U.I*** experience whenever its not.
+
+👉 Here is a [primer video](https://youtu.be/Xg3zdm0wZ7I).
+
+👉 Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j7lk9PRjyE).
 
 
 ## 🌟 Features
@@ -54,39 +63,6 @@ To review the GuiTui concept:
 | `task_priority` | Integer | Numerical priority (Lower = Higher priority). |
 | `next_task` | Integer | Reference to the next task `ID` (Defaults to 0). |
 
-## 🚀 Installation
-
-## 🌟User Interfaces
-Far too handy to deprive DevOps, developers, or power-user 'pros of any important do-list-manager **DoMaster** sports an unheard-of total of three (3) user interfaces: 
-
-(1) The pure TUI to support 'Ops personnel:
-
-```DoMaster```
-
-(2) The TuiGui to use the same TUI metaphor whenever we've a GUI empestered:
-
-```DoMaster```
-
-(3) The GUI mode to enjoy the classic Xerox / PARC / Mac / Windows / XWindows experience:
-
-``` TkDo ```
-
-~ or ~
-
-```python -m domaster.tkdo```
-
-🪄All using the same database format and nexus, of course. 🤓
-
- 
-👉 A new **database backup** feature can now clone our GLOBAL database to another location.
-
-## 🌟 STATUS
-Good to go. Use the 'pip installer in the dist folder.
-
-Here is a [primer video](https://youtu.be/Xg3zdm0wZ7I).
-
-Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j7lk9PRjyE).
-
 🎓 **Notes:** 
 
 👉 The GLOBAL / PACKAGE database is the default. 
@@ -94,6 +70,8 @@ Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j
 👉 TUI-toggling the LOCAL database will put the same into wherever we choose to run `python -m domaster` ... !
 
 👉 Both the HTML Reports & CSV Exports are ALWAYS put into the LOCAL (`pwd`) Db. (*)
+
+👉 A new **database backup** feature can now clone our GLOBAL database to another location.
 
 
 Happy 'Spire-ring!
