@@ -31,9 +31,9 @@ Far too handy to deprive DevOps, developers, or power-user 'pros of any importan
 
 ## 🌟 Videos
 
-👉 How to [download the code](https://youtu.be/xYsrTbXEBhM) and try the new ***G.U.I*** user interface where Tkinter is installed, yet preserve the ***T.U.I*** experience whenever its not.
-
 👉 Here is a [primer video](https://youtu.be/Xg3zdm0wZ7I).
+
+👉 How to [download the code](https://youtu.be/xYsrTbXEBhM) and try the new ***G.U.I*** user interface where Tkinter is installed, yet preserve the ***T.U.I*** experience whenever its not.
 
 👉 Here is the 'vdoc for the [new backup feature](https://www.youtube.com/shorts/2j7lk9PRjyE).
 
